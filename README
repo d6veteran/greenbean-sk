@@ -1,0 +1,22 @@
+Ok
+First push
+
+js/ obvious
+static/ GAE (or Python) needs to know where the static files are for reference
+templates/ this is where I put the templeted html files
+	base.html / this is the base html.  The other files 'inherit' tis one.  I put
+			the js (for voting) and the scripts that FB needs.
+	index.html / this is the main file for the FB app.  This extends base.html 
+			On this file I have the list of statues for beans.
+			I think I use this for all statuses as well as a per user 
+			status - I just change the package that gets sent to this file
+			The package of statues is contained in 'beans' - and on this file
+			I just loop through whatever gets sent in and displays.
+	userStatus.html / I don't think I'm using this for display at this point - just
+			for posting
+
+app.yaml / base GAE
+main.py / the guts
+index.yaml / GAE DB Index file
+facebook.py / the Facebook SDK
+facebook.pyc / the FB SDK compiled
