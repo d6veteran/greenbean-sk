@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+ 
+ <br/>
+  <form action="/sign" method="post">
+      <div><textarea name="content" rows="3" cols="60"></textarea>
+<!--  <textarea name="fb_id" style="visibility: hidden" >{{ current_user.id }}</textarea>
+      <textarea name="fb_access" style="visibility: hidden" >{{ current_user.access_token }}></textarea> -->
+      </div>
+      <div><input type="submit" value="Post a bean"></div>
+    </form>
+<br/><br/>
+    <div class="floatcontainerdiv">
+      {% for bean in beans %}
+	Votes: {{bean.votes}}
+        Vote: <a href='/vote?id={{bean.key}}' class="vote">+</a>  
+    	<div class="floatleftdiv">
+	 <p>User: <a href="user?user={{ bean.id }}"><img src="http://graph.facebook.com/{{ bean.id }}/picture?type=square"/></a></p>
+        </div>
+           Wrote:     <b>{{ bean.author }}</b> wrote: <blockquote>{{ bean.content|escape }}</blockquote>
+
+        <br style="clear:both" />
+       </div>
+
+
+    {% endfor %}
+
+    Debug - displaying uri for debugging
+       {{requested_url}}
+{% endblock %}
