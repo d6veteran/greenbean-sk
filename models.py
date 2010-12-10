@@ -1,6 +1,6 @@
 # Placeholder of new datastore models.
 
-import facbook
+#Took out the import facebook - this is in the main file
 
 from google.appengine.ext import db
 
