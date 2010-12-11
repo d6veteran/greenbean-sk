@@ -22,6 +22,13 @@ div.container { text-align: left; width: 100%;  }
 
 /*MAIN*/
 #mainbar { width: 400px; float: left; }
+#brag-form { }
+div.brag-list { margin-bottom: 30px; overflow: auto; }
+div.brag-list .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 394px; }
+div.brag-entry .brag-message { background-color: blue; }
+div.brag-entry .brag-categories { }
+div.brag-entry .brag-stats { }
+div.brag-entry .brag-comments { }
 
 /*SIDEBAR*/
 #sidebar { width: 300px; float: right; }
