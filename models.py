@@ -47,6 +47,11 @@ class Brag(db.Model):
   location = db.ReferenceProperty(Location, required=False)
   origin = db.StringProperty(required=True)
 
+# Many to Many relationship - Brag to Category
+class BragCategory(db.Model):
+  brag = db.ReferenceProperty(Brag, collection_name="categories")
+  category = db.ReferenceProperty(Category, collection_name="brags")
+  
 # Bean is a vote on a specific Brag.
 class Bean(db.Model):
   brag = db.ReferenceProperty(Brag, required=True)	

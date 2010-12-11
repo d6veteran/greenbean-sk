@@ -47,33 +47,7 @@ def getID(id=""):
         return FBUserID
     FBUserID = id
     return FBUserID
-
-#class Bean(db.Model):
-#    author = db.StringProperty(required=True)
-#    content = db.StringProperty(multiline=True)
-#    id = db.StringProperty(required=True)
-#    status_id = db.StringProperty(required=True)
-#    date = db.DateTimeProperty(auto_now_add=True)
-#    votes = db.IntegerProperty()
-#    tags  = db.StringProperty()
-
-
-    
-#class Tags(db.Model):
-#    tag=db.StringProperty(required=True)
-#    created = db.DateTimeProperty(auto_now_add=True)
-#    bean = db.ReferenceProperty(Bean, required=True)
-    
-#class userBeanVote(db.Model):
-#    user = db.ReferenceProperty(FBUser,
-#                                required=True,
-#                                collection_name='Beans')
-#    bean = db.ReferenceProperty(Bean,
-#                                required=True,
-#                                collection_name='beanUser')
-#    createdon = db.DateTimeProperty(auto_now_add=True)
-
-    
+  
     
 class BaseHandler(webapp.RequestHandler):
     """Provides access to the active Facebook user in self.current_user
@@ -225,26 +199,33 @@ class voteBean(webapp.RequestHandler):
     # Need error checking
      def get(self):
         key = self.request.get('id')
-        bragid = models.Brag.get(key)
-        user = self.request.get('user')
+        brag = models.Brag.get(key)
+        user = models.User.get_by_key_name(FBUserID)
         #first - make sure the user can vote on this
         #voted = userBeanVote(str(user.key()), str(bean.key())).get()
         #votedQ  = userBeanVote().filter('bean' , bean.key()).filter('user', user.key()).get()
-        #print(user.userID)
+        #print(user.name)
         #print(bean.key())
         #votedQ = userBeanVote().get(user.userID,bean.key())
         #if votedQ:
         #    print('already voted: ')
         #    return
-        if bragid:
-            bragbeans = models.BragBeans.get(bragid)
-            if bragbeans:
-                i = bragbeans.bean_count
-                if i == None:
+        if (brag and user):
+            # create bean
+            # need to get the get_or_insert working - so there can only be one person one vote per bean
+            #bean = models.Bean.get_or_insert(brag, user, brag=brag, user=user)
+            bean = models.Bean(brag = brag, user = user).put()
+            
+            # now that the bean is in - add the vote
+            
+            bragbeans = models.BragBeans.get_or_insert(bean, brag=brag, bean_count=0)
+            #if bragbeans:
+            i = bragbeans.bean_count
+            if i == None:
                     i = 1
-                bragbeans.bean_count =  i + 1
-                bragbeans.brag = bragid
-                bragbeans.put()
+            bragbeans.bean_count =  i + 1
+            bragbeans.brag = brag
+            bragbeans.put()
             
             #Now sum the total votes per user
             #user = beanUser.get_by_key_name(bean.user_id)
