@@ -39,18 +39,22 @@ class Category(db.Model):
 # characters.  Brags are associated with a specific Location.  Brags can be
 # submitted (originate) via this web application or via a 3rd party network 
 # like Facebook or Twitter.
+
+#notes: once category_ref working - take out the other category and rename this
+# field to category
 class Brag(db.Model):
   message = db.StringProperty(required=True, validator=check_length)
   create_date = db.DateTimeProperty(auto_now_add=True)
-  category = db.StringListProperty(db.StringProperty) #(db.Key)
+  category = db.StringListProperty(db.StringProperty)
+  category_ref = db.ReferenceProperty(Category)
   user = db.ReferenceProperty(User, required=True)
   location = db.ReferenceProperty(Location, required=False)
   origin = db.StringProperty(required=True)
 
 # Many to Many relationship - Brag to Category
 class BragCategory(db.Model):
-  brag = db.ReferenceProperty(Brag, collection_name="categories")
-  category = db.ReferenceProperty(Category, collection_name="brags")
+  brag = db.ReferenceProperty(Brag, collection_name="brags")
+  category = db.ReferenceProperty(Category, collection_name="category")
   
 # Bean is a vote on a specific Brag.
 class Bean(db.Model):

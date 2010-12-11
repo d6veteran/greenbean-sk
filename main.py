@@ -50,20 +50,8 @@ def getID(id=""):
   
     
 class BaseHandler(webapp.RequestHandler):
-    """Provides access to the active Facebook user in self.current_user
-
-    The property is lazy-loaded on first access, using the cookie saved
-    by the Facebook JavaScript SDK to determine the user ID of the active
-    user. See http://developers.facebook.com/docs/authentication/ for
-    more information.
-    """
     @property
     def current_user(self):
-        #for now - adding a location
-        #loc = Location(city="Chicago", state="IL", country="US")
-        #loc.put()
-        #cat = models.Category(name="Green")
-        #cat.put()
         
         if not hasattr(self, "_current_user"):
             self._current_user = None
@@ -88,6 +76,14 @@ class BaseHandler(webapp.RequestHandler):
                     user.put()
 
                 self._current_user = user
+                
+                # Get number of beans for this user
+                # Put it in the user packet
+                userB = db.GqlQuery("SELECT * FROM UserBeans WHERE user =:1", user.key())
+                userB.fetch(1)
+                for count in userB:
+                    self._current_user.userBeans = count.bean_count
+                    
                 getToken(cookie["access_token"])
                 getID(user.fb_id)
                 
@@ -100,17 +96,11 @@ class BaseHandler(webapp.RequestHandler):
         cats = cat_query.fetch(10)
         
         values = {
-            #'url': url,
-            #'url_linktext': url_linktext,
             'request': self.request,
             'user': self.current_user,
-            #'login_url': users.create_login_url(self.request.uri),
-            #'logout_url': users.create_logout_url('http://%s/' % (
-            #    self.request.host,)),
             'debug': self.request.get('deb'),
             'application_name': 'Green Bean',
             'categories': cats}
-            #'city': GetCity()}
         values.update(template_values)
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, os.path.join('templates', template_name))
@@ -121,13 +111,8 @@ class postStatus(BaseHandler):
     def post(self):
 
         #now post on the wall
-        # The function below works - but I'm looking at something more
-        # robust - hence the put_wall_post function
-        #facebook.GraphAPI(FBAccess_token).put_object(user.id, "feed", message=bean.content)
         
         status_text = self.request.get('content')
-        #userC = self.current_user
-        #user = FBUser.get_by_key_name(FBUserID)
         user = models.User.get_by_key_name(FBUserID)
                 
         attachment = {}
@@ -147,15 +132,22 @@ class postStatus(BaseHandler):
         # good for testing
         results  = facebook.GraphAPI(FBAccess_token).put_wall_post(message, attachment)
         status_id = str(results['id'])
-        #status_id = 'ldldl'
+        #status_id = 'This is for testing'
         
         # Get the users category
-        cat_names = self.request.get_all('tag_checks')           
+        cat_names = self.request.get_all('cat_checks')
+
+        #get the category keys for the reference
+        #right now - puts the first one - we need to make cat_ref a list
+        for cat_name in cat_names:
+            catKey = models.Category.get(cat_name)
+            #print(catKey)
         
         #Now put it all in the db
         brag = models.Brag(
             user = user,
-            category = cat_names,
+            #category = cat_names,
+            category_ref = catKey,
             message = status_text,
             origin = 'Facebook')
         brag.put()
@@ -209,14 +201,13 @@ class voteBean(webapp.RequestHandler):
         if (brag and user):
             # create bean
             # need to get the get_or_insert working - so there can only be one person one vote per bean
-            #bean = models.Bean.get_or_insert(brag, user, brag=brag, user=user)
+            #bean = models.Bean.get_or_insert(bragKey, brag=brag, user=user)
             bean = models.Bean(brag = brag, user = user).put()
             
             # now that the bean is in - add the vote
             # So, we're using get_or_insert here - using the key_name (which for us is the key from the brag
             #  this insures that it's unique)
             bragKey = str(brag.key())
-            #print(bragKey)
             bragbeans = models.BragBeans.get_or_insert(bragKey, brag=brag, bean_count=0)
             #if bragbeans:
             i = bragbeans.bean_count
@@ -247,17 +238,22 @@ class HomeHandler(BaseHandler):
         brag_query = models.Brag.all().order('-create_date')
         brags = brag_query.fetch(10)
         # for each brag - get the category
+        
+        #cati = models.Category.get(brags.category_ref)
+        #print(cati)
+        #for cat in brags.category_ref:
+         #   print(cat)
+        
         """
         for i in brags:
             brag = i
-            category = models.BragCategory.get(i.key())
+            category = models.Category.get(i.category_ref)
             for x in category:
                 cat = x.Category.get(brag)
                 list[x] = cat.name
             brag.cat = list
-         """       
+        """       
         
-        #self.response.out.write(template.render(path, template_values))
         self.generate('index.html', {
                        'brags': brags,
                        'current_user': self.current_user,
