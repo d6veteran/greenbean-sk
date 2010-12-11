@@ -95,6 +95,10 @@ class BaseHandler(webapp.RequestHandler):
     
     def generate(self, template_name, template_values={}):
 
+        # Get a list of categories
+        cat_query = models.Category.all()
+        cats = cat_query.fetch(10)
+        
         values = {
             #'url': url,
             #'url_linktext': url_linktext,
@@ -104,7 +108,8 @@ class BaseHandler(webapp.RequestHandler):
             #'logout_url': users.create_logout_url('http://%s/' % (
             #    self.request.host,)),
             'debug': self.request.get('deb'),
-            'application_name': 'Green Bean'}
+            'application_name': 'Green Bean',
+            'categories': cats}
             #'city': GetCity()}
         values.update(template_values)
         directory = os.path.dirname(__file__)
@@ -155,18 +160,15 @@ class postStatus(BaseHandler):
             origin = 'Facebook')
         brag.put()
         
-        #now get tags
-        #now add the tags
-        #tag = tags()
-        #tag_names = self.request.get('tags').split()
-        #new_tags = self.request.get_all('tag_checks')
-        #for tag_name in new_tags:
-            #print(tag_name)
-         #   Tags(tag=tag_name, bean=bean).put()
-            
-        #facebook.GraphAPI(FBAccess_token).put_wall_post(bean.content, attachment={"name": "Link name","link": "http://www.example.com/","caption": "{*actor*} posted a new review","description": "This is a longer description of the attachment","picture": "http://www.example.com/thumbnail.jpg"}, user.id)                 
-        #self.generate('index.html', {
-        #             'beans': beans})
+        #now get categories
+        # store the brag and category in the BragCategory Table
+        new_cats = self.request.get_all('cat_checks')
+        for cat_checks in new_cats:
+           #print(cat_checks)
+           if new_cats:
+            cat = models.Category.get(cat_checks)
+            models.BragCategory(brag=brag, category=cat).put()
+
         self.redirect('/')
         
 class UserPost(BaseHandler):
@@ -174,8 +176,10 @@ class UserPost(BaseHandler):
         status_id = self.request.get('userStatus')
         brag_query = models.Brag.all().order('-date')
         brag_query = brag_query.filter('status_id', status_id)
+        #need to do paging?
         brags = brag_query.fetch(10)
 
+        #now that we have the brags - need to get the categories for each
         self.generate('userStatus.html', {
                       'brags': brags,
                       'status_id':status_id,
@@ -212,7 +216,7 @@ class voteBean(webapp.RequestHandler):
             # So, we're using get_or_insert here - using the key_name (which for us is the key from the brag
             #  this insures that it's unique)
             bragKey = str(brag.key())
-            print(bragKey)
+            #print(bragKey)
             bragbeans = models.BragBeans.get_or_insert(bragKey, brag=brag, bean_count=0)
             #if bragbeans:
             i = bragbeans.bean_count
@@ -225,7 +229,7 @@ class voteBean(webapp.RequestHandler):
             #Now sum the total beans per user
             #Create the row in UserBeans the first time the user gets a vote
             userKey = str(user.key())
-            print(userKey)
+            #print(userKey)
             userBeans = models.UserBeans.get_or_insert(userKey, user=user, bean_count=0)
             i = userBeans.bean_count
             if i == None:
@@ -242,7 +246,16 @@ class HomeHandler(BaseHandler):
     def get(self):         
         brag_query = models.Brag.all().order('-create_date')
         brags = brag_query.fetch(10)
-                
+        # for each brag - get the category
+        """
+        for i in brags:
+            brag = i
+            category = models.BragCategory.get(i.key())
+            for x in category:
+                cat = x.Category.get(brag)
+                list[x] = cat.name
+            brag.cat = list
+         """       
         
         #self.response.out.write(template.render(path, template_values))
         self.generate('index.html', {
