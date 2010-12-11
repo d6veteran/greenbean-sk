@@ -9,31 +9,24 @@ ins { text-decoration: none; }
 del { text-decoration: line-through; }
 table { border-collapse: collapse; border-spacing: 0; }
 
+/*STYLES*/
+body { font-family: Arial, Liberation Sans, DejaVu Sans, sans-serif; font-size: 80%; text-align: center; line-height: 1; color: black; }
+
 /*LAYOUT*/
-body.home-page {}
-div.container {}
-#content {}
+body { background-color: white; margin: 10px; }
+div.container { text-align: left; width: 100%;  }
+#content { margin: 0 auto; min-height: 400px; width: 720px; }
 
 /*HEADER*/
-#header {}
+#header { margin: 0 auto; height: 100px; width: 720px;}
 
 /*MAIN*/
-#mainbar {}
+#mainbar { width: 400px; float: left; }
 
 /*SIDEBAR*/
-#sidebar {}
+#sidebar { width: 300px; float: right; }
 
 /*GOOGLE*/
-body {
-  background-color: white;
-  color: black;
-  margin: 10px;
-}
-
-body, input, textarea {
-  font-family: Arial, sans-serif;
-  font-size: small;
-}
 
 table {
   border-collapse: collapse;
