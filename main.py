@@ -2,15 +2,15 @@
 """Cool Beans base app"""
 
 #Web enabled
-#app name - sampyxisstockwatcher
-#FACEBOOK_APP_ID = "157819884231043"
-#FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
+#app name = sampyxisstockwatcher
+FACEBOOK_APP_ID = "157819884231043"
+FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
 #local
 #app name - coolbeans-local
-FACEBOOK_APP_ID = "13641208923"
-FACEBOOK_APP_SECRET = "71e4b7fea11728cd8e0c022801b278b1"
-#SITE="gbsamtest"
-SITE="mymicrodonations"
+#FACEBOOK_APP_ID = "13641208923"
+#FACEBOOK_APP_SECRET = "71e4b7fea11728cd8e0c022801b278b1"
+SITE="gbsamtest"
+#SITE="mymicrodonations"
 # local site: http://apps.facebook.com/mymicrodonations/
 _DEBUG = True
 
@@ -195,6 +195,8 @@ class User(BaseHandler):
         catList = []
         for i in brags:
            brag = i
+           # get brag count
+           bCount = models.BragBeans.bean_count.get_by_key(i)
            catQuery = models.BragCategory.all()
            catQuery = catQuery.filter("brag", brag)
            cats = catQuery.fetch(10)
@@ -202,7 +204,7 @@ class User(BaseHandler):
             for x in cats:
              cat = models.Category.get(x.category.key())
              catList.append(cat.name)
-            newBrag.append({'cats':catList, 'brag':i})
+            newBrag.append({'bCount':bCount , 'cats':catList, 'brag':i})
             catList = []
             
         self.generate('index.html', {

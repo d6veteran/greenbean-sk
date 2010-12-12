@@ -1,39 +1,15 @@
-/*RESET*/
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, small, fieldset, form, label, legend { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
-body { line-height: 1; }
-ol, ul { list-style: none; }
-blockquote, q { quotes: none; }
-blockquote:before, blockquote:after,q:before, q:after { content: ''; content: none; }
-:focus { outline: 0; }
-ins { text-decoration: none; }
-del { text-decoration: line-through; }
-table { border-collapse: collapse; border-spacing: 0; }
+/* Copyright 2007 Google */
 
-/*STYLES*/
-body { font-family: Arial, Liberation Sans, DejaVu Sans, sans-serif; font-size: 80%; text-align: center; line-height: 1; color: black; }
+body {
+  background-color: white;
+  color: black;
+  margin: 10px;
+}
 
-/*LAYOUT*/
-body { background-color: white; margin: 10px; }
-div.container { text-align: left; width: 100%;  }
-#content { margin: 0 auto; min-height: 400px; width: 720px; }
-
-/*HEADER*/
-#header { margin: 0 auto; height: 100px; width: 720px;}
-
-/*MAIN*/
-#mainbar { width: 400px; float: left; }
-#brag-form { }
-div.brag-list { margin-bottom: 30px; overflow: auto; }
-div.brag-list .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 394px; }
-div.brag-entry .brag-message { background-color: blue; }
-div.brag-entry .brag-categories { }
-div.brag-entry .brag-stats { }
-div.brag-entry .brag-comments { }
-
-/*SIDEBAR*/
-#sidebar { width: 300px; float: right; }
-
-/*GOOGLE*/
+body, input, textarea {
+  font-family: Arial, sans-serif;
+  font-size: small;
+}
 
 table {
   border-collapse: collapse;
@@ -64,9 +40,42 @@ a:visited {
 }
 
 #header {
-  position: relative;
+	border: 2px solid #67a7e3;
+	background-color:#d6e9f8;
+	padding: 10px;
+	text-align: left;
+	margin-bottom: 10px;
+        width:350px;
 }
 
+#form_fill {
+  	border: 2px solid #67a7e3;
+	background-color:#d6e9f8;
+	padding: 10px;
+	text-align: left;
+	margin-bottom: 10px;
+        width:350px;
+}
+#tag_checks {
+  border: 2px solid #67a7e3;
+  position: relative;
+  width:300px;
+   float: left;
+}
+ul {
+  float: left;
+  width: 12em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+ 
+li {
+  float: left;
+  width: 6em;
+  margin: 0;
+  padding: 0;
+}
 #header .title img {
   width: 269px;
   height: 142px;

@@ -5,36 +5,19 @@
 
 {% block body %}
  
-<br/>
-  <form action="/sign" method="post">
-      <div><textarea name="content" rows="3" cols="60"></textarea>
-<!--  <textarea name="fb_id" style="visibility: hidden" >{{ current_user.id }}</textarea>
-      <textarea name="fb_access" style="visibility: hidden" >{{ current_user.access_token }}></textarea> -->
-      </div>
-      <div id="tag_checks">
-	{% for category in categories %}
-	<input name="cat_checks" type="checkbox" value="{{ category.key }}" />{{ category.name }}<br />
-	{%endfor %}
-      </div>
-      <div><input type="submit" value="Post a bean"></div>
-    </form>
- </div>
-<br/><br/>
     <div class="floatcontainerdiv">
       {% for brag in newBrags %}
-	Votes: {{bean.votes}}
-        Vote: <a href='/vote?id={{brag.brag.key}}' class="vote"><b>+</b></a> 
-    	<div class="floatleftdiv">
-	 <p>User: <a href="user?user={{ brag.brag.user.fb_id }}"><img src="http://graph.facebook.com/{{ brag.brag.user.fb_id }}/picture?type=square"/></a></p>
-        </div>
-        <b>{{ brag.brag.user.name }}</b> wrote: <blockquote>{{ brag.brag.message|escape }}</blockquote>
-	    Tags: <b>{{brag.cats}}</b>
-        <br style="clear:both" />
+    	<div id="form_fill">
+	<b>{{ brag.brag.user.name }}</b> wrote: {{ brag.brag.message|escape }}
+	<hr/>
+	<p>User: <a href="user?user={{ brag.brag.user.fb_id }}"><img src="http://graph.facebook.com/{{ brag.brag.user.fb_id }}/picture?type=square"/></a></p>
+	Votes: {{brag.bCount}}
+	<br/><br/>
+        Vote: <a href='/vote?id={{brag.brag.key}}' class="vote"><b>+</b></a>
+	<br/>
+	Tags: <b>{{brag.cats}}</b>
+    </div>
        </div>
 
-
     {% endfor %}
-
-    Debug - displaying uri for debugging
-       {{requested_url}}
 {% endblock %}
