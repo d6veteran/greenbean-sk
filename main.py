@@ -134,20 +134,25 @@ class postStatus(BaseHandler):
         status_id = str(results['id'])
         #status_id = 'This is for testing'
         
+        
+        #remove all this once categories work
         # Get the users category
         cat_names = self.request.get_all('cat_checks')
-
+        
         #get the category keys for the reference
         #right now - puts the first one - we need to make cat_ref a list
+        catKey = [] 
         for cat_name in cat_names:
-            catKey = models.Category.get(cat_name)
+        
+            catKey.append( models.Category.get(cat_name).name)
             #print(catKey)
+        
         
         #Now put it all in the db
         brag = models.Brag(
             user = user,
-            #category = cat_names,
-            category_ref = catKey,
+            category = catKey,
+            #category_ref = catKey,
             message = status_text,
             origin = 'Facebook')
         brag.put()
@@ -156,7 +161,6 @@ class postStatus(BaseHandler):
         # store the brag and category in the BragCategory Table
         new_cats = self.request.get_all('cat_checks')
         for cat_checks in new_cats:
-           #print(cat_checks)
            if new_cats:
             cat = models.Category.get(cat_checks)
             models.BragCategory(brag=brag, category=cat).put()
@@ -164,9 +168,10 @@ class postStatus(BaseHandler):
         self.redirect('/')
         
 class UserPost(BaseHandler):
+    #actually - I don't think we need this function anymore
     def get(self):
         status_id = self.request.get('userStatus')
-        brag_query = models.Brag.all().order('-date')
+        brag_query = models.Brag.all().order('-create_date')
         brag_query = brag_query.filter('status_id', status_id)
         #need to do paging?
         brags = brag_query.fetch(10)
@@ -181,12 +186,27 @@ class UserPost(BaseHandler):
 class User(BaseHandler):
     def get(self):
         user_id = self.request.get('user')
-        brag_query = models.Brag.all().order('-date')
-        brag_query = beans_query.filter('id', user_id)
+        user = models.User.get_by_key_name(user_id)
+        brag_query = models.Brag.all().order('-create_date')
+        brag_query = brag_query.filter('user', user)
         brags = brag_query.fetch(10)
-
+        
+        newBrag = []        
+        catList = []
+        for i in brags:
+           brag = i
+           catQuery = models.BragCategory.all()
+           catQuery = catQuery.filter("brag", brag)
+           cats = catQuery.fetch(10)
+           if cats:
+            for x in cats:
+             cat = models.Category.get(x.category.key())
+             catList.append(cat.name)
+            newBrag.append({'cats':catList, 'brag':i})
+            catList = []
+            
         self.generate('index.html', {
-                      'brags': brags,
+                      'newBrags': newBrag,
                       'user_id':user_id,
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})          
@@ -200,10 +220,14 @@ class voteBean(webapp.RequestHandler):
 
         if (brag and user):
             # create bean
-            # need to get the get_or_insert working - so there can only be one person one vote per bean
-            #bean = models.Bean.get_or_insert(bragKey, brag=brag, user=user)
-            bean = models.Bean(brag = brag, user = user).put()
-            
+            # User can only vote for a Bean once, so make sure they haven't already voted
+            # do a query using both brag and user
+            # if none - then put
+            q = db.GqlQuery("select * from Bean where user =:1 and brag=:2", user.key(), brag.key())
+            count = q.count(1)
+            if count == 0:
+                bean = models.Bean(brag = brag, user = user).put()
+
             # now that the bean is in - add the vote
             # So, we're using get_or_insert here - using the key_name (which for us is the key from the brag
             #  this insures that it's unique)
@@ -214,13 +238,11 @@ class voteBean(webapp.RequestHandler):
             if i == None:
                     i = 1
             bragbeans.bean_count =  i + 1
-            #bragbeans.brag = brag
             bragbeans.put()
             
             #Now sum the total beans per user
             #Create the row in UserBeans the first time the user gets a vote
             userKey = str(user.key())
-            #print(userKey)
             userBeans = models.UserBeans.get_or_insert(userKey, user=user, bean_count=0)
             i = userBeans.bean_count
             if i == None:
@@ -234,28 +256,28 @@ class voteBean(webapp.RequestHandler):
         self.redirect('/')
         
 class HomeHandler(BaseHandler):
-    def get(self):         
+    def get(self):
+
         brag_query = models.Brag.all().order('-create_date')
         brags = brag_query.fetch(10)
-        # for each brag - get the category
+        # for each brag - get the category  
         
-        #cati = models.Category.get(brags.category_ref)
-        #print(cati)
-        #for cat in brags.category_ref:
-         #   print(cat)
-        
-        """
+        newBrag = []        
+        catList = []
         for i in brags:
-            brag = i
-            category = models.Category.get(i.category_ref)
-            for x in category:
-                cat = x.Category.get(brag)
-                list[x] = cat.name
-            brag.cat = list
-        """       
-        
+           brag = i
+           catQuery = models.BragCategory.all()
+           catQuery = catQuery.filter("brag", brag)
+           cats = catQuery.fetch(10)
+           if cats:
+            for x in cats:
+             cat = models.Category.get(x.category.key())
+             catList.append(cat.name)
+            newBrag.append({'cats':catList, 'brag':i})
+            catList = []
+            
         self.generate('index.html', {
-                       'brags': brags,
+                       'newBrags': newBrag,
                        'current_user': self.current_user,
                        'facebook_app_id':FACEBOOK_APP_ID})
 
