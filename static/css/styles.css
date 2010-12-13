@@ -10,7 +10,8 @@ del { text-decoration: line-through; }
 table { border-collapse: collapse; border-spacing: 0; }
 
 /*TEXT STYLES*/
-body { font-family: Arial, Liberation Sans, DejaVu Sans, sans-serif; font-size: 80%; text-align: center; line-height: 1; color: black; }
+body { font-family: Georgia,"Times New Roman",Times,serif; font-size: 100%; text-align: center; line-height: 1; color: black; }
+a { color: #81290D; cursor: pointer; outline: medium none; text-decoration: none; }
 
 /*LAYOUT*/
 body { background-color: #eee9dc; margin: 10px; }
@@ -24,15 +25,18 @@ div.container { text-align: left; width: 100%;  }
 /*MAIN*/
 #content { margin: 0 auto; width: 100%; float: left; }
 #content-mid { background: url("../images/content-mid.png") repeat-y scroll center top transparent; min-height: 400px; width: 720px; }
-#content h2 { color: #81290D; font-size: 20px; font-weight: normal; padding-bottom: 7px; text-transform: uppercase;}
-
+div#user-profile { height: 50px; }
+#user-profile .profile-image { float: left; }
+#user-profile .profile-name { margin-left: 60px; }
+#user-profile h2 { color: #81290D; font-size: 20px; font-weight: normal; text-transform: uppercase;}
 
 #mainbar { margin-left: 28px; width: 400px; float: left; }
 #brag-form { }
-div.brag-list { margin-bottom: 30px; overflow: auto; }
-div.brag-list .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 394px; }
-div.brag-entry .brag-message { background-color: blue; }
-div.brag-entry .brag-categories { }
+div.brag-list { margin-bottom: 30px; overflow: auto; clear:both; }
+div.brag-list .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 394px; background: url("../images/entry-separator.png") no-repeat scroll left bottom transparent; }
+div.brag-entry .brag-message { padding-bottom: 6px; }
+div.brag-entry .brag-message p { color: #737373; font-size: 16px; padding-top: 8px; }
+div.brag-entry .brag-meta p { font-size: 12px; color: #737373; }
 div.brag-entry .brag-stats { }
 div.brag-entry .brag-comments { }
 
