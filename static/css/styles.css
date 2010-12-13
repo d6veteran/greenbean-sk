@@ -1,0 +1,41 @@
+/*RESET*/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, small, fieldset, form, label, legend { margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline; background: transparent; }
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after,q:before, q:after { content: ''; content: none; }
+:focus { outline: 0; }
+ins { text-decoration: none; }
+del { text-decoration: line-through; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+/*TEXT STYLES*/
+body { font-family: Arial, Liberation Sans, DejaVu Sans, sans-serif; font-size: 80%; text-align: center; line-height: 1; color: black; }
+
+/*LAYOUT*/
+body { background-color: #eee9dc; margin: 10px; }
+div.container { text-align: left; width: 100%;  }
+
+/*HEADER*/
+#header { margin: 0 auto; width: 100%; float: left; }
+#logo { background-image: url("../images/logo.png"); width: 280px; height: 76px; }
+#content-tp { background: url("../images/content-top.png") no-repeat scroll center top transparent; width: 720px; height: 40px; }
+
+/*MAIN*/
+#content { margin: 0 auto; width: 100%; float: left; }
+#content-mid { background: url("../images/content-mid.png") repeat-y scroll center top transparent; min-height: 400px; width: 720px; }
+#content h2 { color: #81290D; font-size: 20px; font-weight: normal; padding-bottom: 7px; text-transform: uppercase;}
+
+
+#mainbar { margin-left: 28px; width: 400px; float: left; }
+#brag-form { }
+div.brag-list { margin-bottom: 30px; overflow: auto; }
+div.brag-list .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 394px; }
+div.brag-entry .brag-message { background-color: blue; }
+div.brag-entry .brag-categories { }
+div.brag-entry .brag-stats { }
+div.brag-entry .brag-comments { }
+
+/*SIDEBAR*/
+#sidebar { width: 300px; float: right; }
+
