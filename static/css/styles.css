@@ -12,10 +12,10 @@ table { border-collapse: collapse; border-spacing: 0; }
 /*TEXT STYLES*/
 body { font-family: Georgia,"Times New Roman",Times,serif; line-height: 1.4em; }
 a { color: #81290D; cursor: pointer; outline: medium none; text-decoration: none; }
-#brag-form h3, #sidebar h3 {  font-family: Arial; color: #81290D; font-size: 16px; font-weight: normal; padding-bottom: 4px; }
+#brag-form h3, #sidebar h3 { color: #81290D; font-size: 16px; font-weight: normal; padding-bottom: 4px; }
 #mainbar .user-profile h2 { color: #81290D; font-size: 20px; font-weight: normal; text-transform: uppercase; }
 #brag-list .brag-vote a { font-size: 12px; }
-#brag-list .brag-entry p, #sidebar p { font-size: 16px; padding-top: 8px; color: #636363; }
+#brag-list .brag-entry p, #sidebar p, #sidebar ul { font-size: 16px; padding-top: 8px; color: #636363; }
 #brag-list .brag-entry .brag-meta p, #sidebar p { text-align: left; font-size: 14px; }
 
 /*LAYOUT*/
@@ -60,7 +60,7 @@ input.button { border: 1px solid #81290D; color: #81290D; font-weight: bold; }
 /*SIDEBAR*/
 #sidebar { width: 260px; float: left; }
 #start ul { list-style-image: url("../images/green-bullet.png"); margin-left: 20px;  }
-#start-button {text-align: center; border: 2px solid #81290D; color: #81290D; width: 100px; }
+#start-button { width: 88px; height: 32px; float: right; margin-top: 10px; }
 
 
 /*FOOTER*/
