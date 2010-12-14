@@ -3,43 +3,114 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<title>Green Bean Me</title>
-		<link rel="stylesheet" type="text/css" href="static/css/styles.css">
+		<link rel="stylesheet" type="text/css" href="static/css/test-styles.css">
 	    
 	</head>
-	<body class="home-page">
-		<div class="container">
+	<body>
+		<div id="container">
+			
+            <!-- HEADER --> 
 			<div id="header">
-			  <div id="logo"></div>
-			  <div id="content-tp"></div>
+			    <div id="logo"></div>
+			    <div id="content-top"></div>
 			</div>
+            
+            <!-- MAIN CONTENT --> 
 			<div id="content">
-				<div id="content-mid">
-				    <div id="mainbar">
-					    <div id="user-profile">
-						    <div class="profile-image">
-							    <img src="http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1324.snc4/161504_679874743_3913937_q.jpg"/>
+                <div id="content-middle">
+                    <div id="bar-wrapper">
+	
+	                    <!-- MAINBAR --> 
+	                    <div id="mainbar">
+						    <!-- user-profile: container for the user's avatar and name. -->
+						    <div class="user-profile">
+							    <div class="profile-image">
+								    <img src="http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs1324.snc4/161504_679874743_3913937_q.jpg"/>
+								</div>
+							    <div class="profile-name">
+								    <h2>Will Merydith</h2>
+								</div> 
 							</div>
-						    <div class="profile-name">
-							    <h2>Will Merydith</h2>
-							</div> 
+							
+							<!-- brag-form: container for the Brag entry form -->
+					        <div id="brag-form"></div>
+					
+						    <!-- brag-list: container for list of Brags. --> 
+						    <div id="brag-list">
+
+							    <!-- brag-entry: container for a single Brag -->
+						        <div class="brag-entry">
+							        <div class="brag-vote">149
+								    </div>					            
+						            <div class="brag-message">
+							            <p>Commuting to work with 3 other people in my new Volt.</p>
+							        </div>       	
+						            <div class="brag-meta">
+							            <p>2 hours ago - <a href="#">#commute</a> <a href="#">#carpool</a></p>
+							        </div>       	
+						            <div class="brag-stats">...</div>       	
+								    <div class="brag-comments">...</div>   
+						        </div><!-- /brag-entry -->
+
+							    <!-- brag-entry: container for a single Brag -->
+						        <div class="brag-entry">
+							        <div class="brag-vote">149
+								    </div>					            
+						            <div class="brag-message">
+							            <p>Commuting to work with 3 other people in my new Volt.</p>
+							        </div>       	
+						            <div class="brag-meta">
+							            <p>2 hours ago - <a href="#">#commute</a> <a href="#">#carpool</a></p>
+							        </div>       	
+						            <div class="brag-stats">...</div>       	
+								    <div class="brag-comments">...</div>   
+						        </div><!-- /brag-entry -->
+
+							    <!-- brag-entry: container for a single Brag -->
+						        <div class="brag-entry">
+							        <div class="brag-vote">149
+								    </div>					            
+						            <div class="brag-message">
+							            <p>Commuting to work with 3 other people in my new Volt.</p>
+							        </div>       	
+						            <div class="brag-meta">
+							            <p>2 hours ago - <a href="#">#commute</a> <a href="#">#carpool</a></p>
+							        </div>       	
+						            <div class="brag-stats">...</div>       	
+								    <div class="brag-comments">...</div>   
+						        </div><!-- /brag-entry -->
+
+							    <!-- brag-entry: container for a single Brag -->
+						        <div class="brag-entry">
+							        <div class="brag-vote">149
+								    </div>					            
+						            <div class="brag-message">
+							            <p>Commuting to work with 3 other people in my new Volt.</p>
+							        </div>       	
+						            <div class="brag-meta">
+							            <p>2 hours ago - <a href="#">#commute</a> <a href="#">#carpool</a></p>
+							        </div>       	
+						            <div class="brag-stats">...</div>       	
+								    <div class="brag-comments">...</div>   
+						        </div><!-- /brag-entry -->
+
+						    </div><!-- /brag-list -->							
+		
+                        </div><!-- /mainbar -->
+
+                        <!-- SIDEBAR --> 
+                        <div id="sidebar">
 						</div>
-				        <div id="brag-form"></div>
-				        <div class="brag-list">
-				            <div class="brag-entry">					            
-				                <div class="brag-message">
-					                <p>brag-message</p>
-					            </div>       	
-				                <div class="brag-meta">
-					                <p>2 hours ago - <a href="#">#organic</a> <a href="#">#sustainable</a></p>
-					            </div>       	
-				                <div class="brag-stats">...</div>       	
-						        <div class="brag-comments">...</div>   
-				            </div>
-				        </div>
-				    </div>
-				</div> 
-				<div id="sidebar">SIDEBAR</div>
-			</div>
-		</div>
+	                
+	                </div><!-- /bar-wrapper -->
+                </div><!-- /content-middle -->
+            </div><!-- /content -->
+            
+            <!-- FOOTER --> 
+            <div id="footer">
+			    <div id="content-bottom"></div>                  
+            </div>
+
+		</div><!-- /container -->
 	</body>
 </html>
