@@ -38,6 +38,7 @@ Thumbs.db
 *.tmproj
 .project
 .pydevproject
+*.psd
 
 # GAE #
 #######
