@@ -28,7 +28,7 @@ body { background-color: #eee9dc; }
 #bar-wrapper { margin-left: 24px; width: 100%; }
 
 /*MAINBAR*/
-#mainbar {width: 386px; float: left; padding-right: 28px; }
+#mainbar { width: 386px; float: left; padding-right: 28px; }
 
 .user-profile { height: 60px; }
 .user-profile .profile-image { float: left; }
@@ -36,11 +36,13 @@ body { background-color: #eee9dc; }
 .user-profile .profile-name { margin-left: 64px; }
 .user-profile h2 { color: #81290D; font-size: 20px; font-weight: normal; text-transform: uppercase;}
 
-#brag-form { margin: 6px 0; clear: both; }
+#brag-form { margin: 6px 0 18px 0; float: left; clear: both; }
 #brag-form h3 { color: #81290D; font-size: 16px; font-weight: normal; padding-bottom: 4px; }
 #text-box .text-area { border: 1px solid #c3c7bd; }
 #tag-list { }
-
+#tag-list ul, #tag-list li { display: inline; color: #636363; font-size: 12px; }
+#submit-button { float: right; }
+input.button { border: 1px solid #81290D; color: #81290D; font-weight: bold; }
 
 #brag-list { margin: 20px 0; clear:both; overflow: hidden; }
 #brag-list .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 100%; background: url("../images/entry-separator.png") no-repeat scroll left top transparent; color: #636363; }
