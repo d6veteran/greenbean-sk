@@ -111,7 +111,6 @@ class postStatus(BaseHandler):
     def post(self):
 
         #now post on the wall
-        
         status_text = self.request.get('content')
         user = models.User.get_by_key_name(FBUserID)
                 
@@ -139,6 +138,7 @@ class postStatus(BaseHandler):
         # Get the users category
         cat_names = self.request.get_all('cat_checks')
         
+        # With the change in categories - may not need this
         #get the category keys for the reference
         #right now - puts the first one - we need to make cat_ref a list
         catKey = [] 
@@ -157,6 +157,7 @@ class postStatus(BaseHandler):
             origin = 'Facebook')
         brag.put()
         
+        # With the change in categories - may not need this
         #now get categories
         # store the brag and category in the BragCategory Table
         new_cats = self.request.get_all('cat_checks')
@@ -190,7 +191,7 @@ class User(BaseHandler):
         brag_query = models.Brag.all().order('-create_date')
         brag_query = brag_query.filter('user', user)
         brags = brag_query.fetch(10)
-        
+
         newBrag = []        
         catList = []
         for i in brags:
@@ -204,8 +205,8 @@ class User(BaseHandler):
             for x in cats:
              cat = models.Category.get(x.category.key())
              catList.append(cat.name)
-            newBrag.append({'bCount':bCount , 'cats':catList, 'brag':i})
-            catList = []
+           newBrag.append({'bCount':bCount , 'cats':catList, 'brag':i})
+           catList = []
             
         self.generate('index.html', {
                       'newBrags': newBrag,
@@ -253,6 +254,21 @@ class voteBean(webapp.RequestHandler):
             userBeans.put()
 
             #Now do the same for categories
+            """
+            for categories in brag.category:
+                print(categories)
+                
+                #catBean = models.CategoryBeans.get_or_insert(categories, category=categories, bean_count=0)
+                catQuery = db.GqlQuery("SELECT bean_count FROM CategoryBeans WHERE category =:1", categories)
+                catQuery.fetch(1)
+#                catQuery = models.CategoryBeans.all().filter("name", categories).fetch(1)
+                print(catQuery)
+                i = catQuery.bean_count
+                if i == None:
+                    i = 1
+                catQuery.bean_count = i + 1
+                catQuery.put()
+             """   
             
             #Now do the same for location
         self.redirect('/')
@@ -264,6 +280,7 @@ class HomeHandler(BaseHandler):
         brags = brag_query.fetch(10)
         # for each brag - get the category  
         
+               
         newBrag = []        
         catList = []
         for i in brags:
@@ -271,12 +288,20 @@ class HomeHandler(BaseHandler):
            catQuery = models.BragCategory.all()
            catQuery = catQuery.filter("brag", brag)
            cats = catQuery.fetch(10)
+           #get bean count for brag
+           bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
+           bCount.fetch(1)
+           bean_count = 0
+           for count in bCount:
+            bean_count = count.bean_count
            if cats:
             for x in cats:
              cat = models.Category.get(x.category.key())
              catList.append(cat.name)
-            newBrag.append({'cats':catList, 'brag':i})
+            newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
             catList = []
+
+
             
         self.generate('index.html', {
                        'newBrags': newBrag,
