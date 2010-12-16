@@ -3,8 +3,8 @@
 
 #Web enabled
 #app name = sampyxisstockwatcher
-FACEBOOK_APP_ID = "157819884231043"
-FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
+FACEBOOK_APP_ID = "177574905593514"
+FACEBOOK_APP_SECRET = "59aa87cd375fa041193894bfd0d71ad3"
 #local
 #app name - coolbeans-local
 #FACEBOOK_APP_ID = "13641208923"
@@ -18,7 +18,6 @@ _DEBUG = True
 
 import facebook
 import models
-import location
 import os.path
 import wsgiref.handlers
 import cgi
