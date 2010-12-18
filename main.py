@@ -3,8 +3,8 @@
 
 #Web enabled
 #app name = sampyxisstockwatcher
-FACEBOOK_APP_ID = "177574905593514"
-FACEBOOK_APP_SECRET = "59aa87cd375fa041193894bfd0d71ad3"
+FACEBOOK_APP_ID = "157819884231043"
+FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
 #local
 #app name - coolbeans-local
 #FACEBOOK_APP_ID = "13641208923"
@@ -18,6 +18,7 @@ _DEBUG = True
 
 import facebook
 import models
+import location
 import os.path
 import wsgiref.handlers
 import cgi
@@ -51,12 +52,16 @@ def getID(id=""):
 class BaseHandler(webapp.RequestHandler):
     @property
     def current_user(self):
-        
+        #print(getID())
+        #print(self)
         if not hasattr(self, "_current_user"):
             self._current_user = None
             cookie = facebook.get_user_from_cookie(
                 self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
+            #print(cookie)
+            
             if cookie:
+                #print("i have a cookie")
                 # Store a local instance of the user data so we don't need
                 # a round-trip to Facebook on every request
                 user = models.User.get_by_key_name(cookie["uid"])
@@ -85,6 +90,9 @@ class BaseHandler(webapp.RequestHandler):
                     
                 getToken(cookie["access_token"])
                 getID(user.fb_id)
+                #print(getID(user.fb_id))
+                #print(user.fb_id)
+
                 
         return self._current_user
     
@@ -111,7 +119,10 @@ class postStatus(BaseHandler):
 
         #now post on the wall
         status_text = self.request.get('content')
-        user = models.User.get_by_key_name(FBUserID)
+        #print(FBUserID)
+        #user = models.User.get_by_key_name(FBUserID)
+        user = self.current_user
+        #print(user.fb_id)
                 
         attachment = {}
         action_links = {}
@@ -128,9 +139,9 @@ class postStatus(BaseHandler):
         results = {}     
         # take the 2 lines out below to just update the db - not facebook
         # good for testing
-        results  = facebook.GraphAPI(FBAccess_token).put_wall_post(message, attachment)
-        status_id = str(results['id'])
-        #status_id = 'This is for testing'
+        #results  = facebook.GraphAPI(FBAccess_token).put_wall_post(message, attachment)
+        #status_id = str(results['id'])
+        status_id = 'This is for testing'
         
         
         #remove all this once categories work
@@ -195,17 +206,21 @@ class User(BaseHandler):
         catList = []
         for i in brags:
            brag = i
-           # get brag count
-           bCount = models.BragBeans.bean_count.get_by_key(i)
            catQuery = models.BragCategory.all()
            catQuery = catQuery.filter("brag", brag)
            cats = catQuery.fetch(10)
+           #get bean count for brag
+           bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
+           bCount.fetch(1)
+           bean_count = 0
+           for count in bCount:
+            bean_count = count.bean_count
            if cats:
             for x in cats:
              cat = models.Category.get(x.category.key())
              catList.append(cat.name)
-           newBrag.append({'bCount':bCount , 'cats':catList, 'brag':i})
-           catList = []
+            newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
+            catList = []
             
         self.generate('index.html', {
                       'newBrags': newBrag,
@@ -297,8 +312,8 @@ class HomeHandler(BaseHandler):
             for x in cats:
              cat = models.Category.get(x.category.key())
              catList.append(cat.name)
-            newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
-            catList = []
+           newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
+           catList = []
 
 
             
