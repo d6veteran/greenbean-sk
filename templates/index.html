@@ -8,23 +8,7 @@
     </head>
     <body>
 <div id="fb-root"></div>
- <script src="http://connect.facebook.net/en_US/all.js"></script>
-       	<script>
-       		window.fbAsyncInit = function() {
-       			FB.init({appId: '{{ facebook_app_id }}', status: true, cookie: true, xfbml: true});
-       			FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
-       				window.location.reload();
-       			});
-       			FB.Canvas.setAutoResize();
-    		};
-    		(function() {
-       			var e = document.createElement('script');
-       			e.type = 'text/javascript';
-       			e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-       			e.async = true;
-       			document.getElementById('fb-root').appendChild(e);
-    		}());
-    	</script>
+
 
 		<div id="container">
            	<!-- HEADER --> 
@@ -32,27 +16,33 @@
                	<div id="logo"></div>
                	<div id="content-top"></div>
 		
+		<!--
                	<div class="button">
                		<fb:login-button autologoutlink="true" perms="read_stream,publish_stream"></fb:login-button>
                	</div>
+		-->
            	</div>
             
            	<!-- MAIN CONTENT --> 
            	<div id="content">
                	<div id="content-middle">
                    	<div id="bar-wrapper">
-    
+		      
                        	<!-- MAINBAR --> 
                        	<div id="mainbar">
                            	<!-- user-profile: container for the user's avatar and name. -->
                            	<div class="user-profile">
-                           		{% if current_user %}
+                           		{% if current_user %}      
                                	<div class="profile-image">
                                    	<a href="{{ current_user.profile_url }}"><img src="http://graph.facebook.com/{{ current_user.fb_id }}/picture?type=square"/></a></p>                                    
                                	</div>
                                	<div class="profile-name">
                                    	<h2>{{ current_user.name|escape }}</h2>
+					<p><a href="/auth/logout">Log out</a></p>
                                	</div>
+				    {% else %}
+				    <p>You are not yet logged into this site</p>
+				    <p><a href="/auth/login">Log in with Facebook</a></p>
                            		{% endif %}                             
                            	</div>
                            

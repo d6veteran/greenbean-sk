@@ -125,12 +125,6 @@ class GraphAPI(object):
         assert self.access_token, "Write operations require an access token"
         return self.request(parent_object + "/" + connection_name, post_args=data)
 
-    def put_post_w_action(self, message, attachment={}, action_links={}, profile_id="me"):
-        """ Working on getting action links to work with the wall post """
-        assert self.access_token, "Write operations require an access token"
-        data = message + attachment + action_links
-        return self.request(profile_id, "feed", post_args=data)
-    
     def put_wall_post(self, message, attachment={}, profile_id="me"):
         """Writes a wall post to the given profile's wall.
 
