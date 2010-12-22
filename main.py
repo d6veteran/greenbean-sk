@@ -30,35 +30,17 @@ import wsgiref.handlers
 import models
 import facebook
 
+
 from django.utils import simplejson as json
 from google.appengine.ext import db
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 
-#
-# need to just change these to global vars below the facebook app id
-def getToken(token=""):
-    global FBAccess_token     
-    if token =="":
-        return FBAccess_token
-    FBAccess_token = token
-    return FBAccess_token
-
-def getID(id=""):
-    global FBUserID    
-    #FBUserID = ""
-    if id=="":
-        return FBUserID
-    FBUserID = id
-    return FBUserID
-  
     
 class BaseHandler(webapp.RequestHandler):
     @property
     def current_user(self):
-        #print(getID())
-        #print(self)
         if not hasattr(self, "_current_user"):
             
             self._current_user = None
@@ -98,10 +80,7 @@ class postStatus(BaseHandler):
 
         #now post on the wall
         status_text = self.request.get('content')
-        #print(FBUserID)
-        #user = models.User.get_by_key_name(FBUserID)
         user = self.current_user
-        #print(user.fb_id)
                 
         attachment = {}
         action_links = {}
@@ -118,11 +97,9 @@ class postStatus(BaseHandler):
         results = {}     
         # take the 2 lines out below to just update the db - not facebook
         # good for testing
-        #results  = facebook.GraphAPI(FBAccess_token).put_wall_post(message, attachment)
         results  = facebook.GraphAPI(user.fb_access_token).put_wall_post(message, attachment)
         status_id = str(results['id'])
-        #status_id = 'This is for testing'
-        
+        #status_id = 'This is for testing'       
         
         #remove all this once categories work
         # Get the users category
@@ -133,10 +110,7 @@ class postStatus(BaseHandler):
         #right now - puts the first one - we need to make cat_ref a list
         catKey = [] 
         for cat_name in cat_names:
-        
             catKey.append( models.Category.get(cat_name).name)
-            #print(catKey)
-        
         
         #Now put it all in the db
         brag = models.Brag(
@@ -158,6 +132,8 @@ class postStatus(BaseHandler):
 
         self.redirect('/')     
 
+# This function is used when we want to view all beans from a particular
+# user that is not the user logged in
 class User(BaseHandler):
     def get(self):
         user_id = self.request.get('user')
@@ -192,13 +168,13 @@ class User(BaseHandler):
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})          
                     
-class voteBean(webapp.RequestHandler):
+class voteBean(BaseHandler):
     # Need error checking
      def get(self):
         key = self.request.get('id')
         brag = models.Brag.get(key)
-        user = models.User.get_by_key_name(FBUserID)
-
+        user = self.current_user
+        
         if (brag and user):
             # create bean
             # User can only vote for a Bean once, so make sure they haven't already voted
@@ -209,44 +185,48 @@ class voteBean(webapp.RequestHandler):
             if count == 0:
                 bean = models.Bean(brag = brag, user = user).put()
 
-            # now that the bean is in - add the vote
-            # So, we're using get_or_insert here - using the key_name (which for us is the key from the brag
-            #  this insures that it's unique)
-            bragKey = str(brag.key())
-            bragbeans = models.BragBeans.get_or_insert(bragKey, brag=brag, bean_count=0)
-            #if bragbeans:
-            i = bragbeans.bean_count
-            if i == None:
-                    i = 1
-            bragbeans.bean_count =  i + 1
-            bragbeans.put()
+                # now that the bean is in - add the vote
+                # So, we're using get_or_insert here - using the key_name (which for us is the key from the brag
+                #  this insures that it's unique)
+                bragKey = str(brag.key())
+                bragbeans = models.BragBeans.get_or_insert(bragKey, brag=brag, bean_count=0)
+                #if bragbeans:
+                i = bragbeans.bean_count
+                if i == None:
+                        i = 1
+                bragbeans.bean_count =  i + 1
+                bragbeans.put()
             
-            #Now sum the total beans per user
-            #Create the row in UserBeans the first time the user gets a vote
-            userKey = str(user.key())
-            userBeans = models.UserBeans.get_or_insert(userKey, user=user, bean_count=0)
-            i = userBeans.bean_count
-            if i == None:
-                i = 1
-            userBeans.bean_count = i +1
-            userBeans.put()
-
-            #Now do the same for categories
-            """
-            for categories in brag.category:
-                print(categories)
-                
-                #catBean = models.CategoryBeans.get_or_insert(categories, category=categories, bean_count=0)
-                catQuery = db.GqlQuery("SELECT bean_count FROM CategoryBeans WHERE category =:1", categories)
-                catQuery.fetch(1)
-#                catQuery = models.CategoryBeans.all().filter("name", categories).fetch(1)
-                print(catQuery)
-                i = catQuery.bean_count
+                #Now sum the total beans per user
+                #Create the row in UserBeans the first time the user gets a vote
+                userKey = str(user.key())
+                userBeans = models.UserBeans.get_or_insert(userKey, user=user, bean_count=0)
+                i = userBeans.bean_count
                 if i == None:
                     i = 1
-                catQuery.bean_count = i + 1
-                catQuery.put()
-             """   
+                userBeans.bean_count = i +1
+                userBeans.put()
+
+                """ Arg...can't get this to work yet!
+                #Now do the same for categories
+                
+                for category in brag.category:
+                    catKey = models.Category.all().filter("name", category).fetch(1)
+                    print(catKey)
+                    #caKey = str(catKey.key())
+                    c = models.Category.get('ag9jb29sYmVhbnMtbG9jYWxyDgsSCENhdGVnb3J5GHYM')
+                    print(c.name)
+                    catBean = models.CategoryBeans.get_or_insert(c.key(), category=category, bean_count=0)
+                    #catQuery = db.GqlQuery("select bean_count from CategoryBeans where category =:1", category)
+                    #catQuery.fetch(1)
+#                    catQuery = models.CategoryBeans.all().filter("name", categories).fetch(1)
+                    print(catBean.bean_count)
+                    i = catQuery.bean_count
+                    if i == None:
+                        i = 1
+                    catQuery.bean_count = i + 1
+                    catQuery.put()
+                    """
             
             #Now do the same for location
         self.redirect('/')
@@ -255,7 +235,9 @@ class HomeHandler(BaseHandler):
     def get(self):
 
         brag_query = models.Brag.all().order('-create_date')
-        brags = brag_query.fetch(10)
+        user = self.current_user
+        brag_query = brag_query.filter('user', user)
+        brags = brag_query.fetch(20)
         # for each brag - get the category  
                
         newBrag = []        
@@ -309,6 +291,7 @@ class LoginHandler(BaseHandler):
                         profile_url=profile["link"])
             user.put()
             
+            #This is on here for iframe issues with IE
             self.response.headers["P3P"] = 'CP="IDC CURa ADMa OUR IND PHY ONL COM STA"'
             set_cookie(self.response, "fb_user", str(profile["id"]),
                        expires=time.time() + 30 * 86400)
@@ -367,6 +350,8 @@ def cookie_signature(*parts):
     hash = hmac.new(FACEBOOK_APP_SECRET, digestmod=hashlib.sha1)
     for part in parts: hash.update(part)
     return hash.hexdigest()
+
+
     
 def main():
     util.run_wsgi_app(webapp.WSGIApplication([(r"/", HomeHandler),
