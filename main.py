@@ -30,7 +30,6 @@ import wsgiref.handlers
 import models
 import facebook
 
-
 from django.utils import simplejson as json
 from google.appengine.ext import db
 from google.appengine.ext import webapp
@@ -81,6 +80,11 @@ class postStatus(BaseHandler):
         #now post on the wall
         status_text = self.request.get('content')
         user = self.current_user
+        
+        #first check that the status is less than 140 chars
+        if len(status_text) > 140:
+            print("error")
+            self.redirect('/')   
                 
         attachment = {}
         action_links = {}
@@ -131,7 +135,7 @@ class postStatus(BaseHandler):
             models.BragCategory(brag=brag, category=cat).put()
 
         self.redirect('/')     
-
+       
 # This function is used when we want to view all beans from a particular
 # user that is not the user logged in
 class User(BaseHandler):
@@ -140,7 +144,7 @@ class User(BaseHandler):
         user = models.User.get_by_key_name(user_id)
         brag_query = models.Brag.all().order('-create_date')
         brag_query = brag_query.filter('user', user)
-        brags = brag_query.fetch(10)
+        brags = brag_query.fetch(20)
 
         newBrag = []        
         catList = []
@@ -265,18 +269,22 @@ class HomeHandler(BaseHandler):
                        'current_user': self.current_user,
                        'facebook_app_id':FACEBOOK_APP_ID})
 
-
+        
 # New oauth facebook code
 class LoginHandler(BaseHandler):
     def get(self):
         verification_code = self.request.get("code")
-        args = dict(client_id=FACEBOOK_APP_ID, redirect_uri=self.request.path_url)
+        args = dict(client_id=FACEBOOK_APP_ID, redirect_uri="http://apps.facebook.com/" + SITE + "/auth/login" )
+        #redir = self.request.path_url
+        redir = "http://apps.facebook.com/" + SITE + "/auth/login"
         if self.request.get("code"):
             args["client_secret"] = FACEBOOK_APP_SECRET
             args["code"] = self.request.get("code")
+            args["scope"] = "user_photos,user_videos,publish_stream,read_stream"
             response = cgi.parse_qs(urllib.urlopen(
                 "https://graph.facebook.com/oauth/access_token?" +
                 urllib.urlencode(args)).read())
+            print(response)
             access_token = response["access_token"][-1]
 
             # Download the user profile and cache a local instance of the
@@ -297,9 +305,16 @@ class LoginHandler(BaseHandler):
                        expires=time.time() + 30 * 86400)
             self.redirect("/")
         else:
-            self.redirect(
-                "https://graph.facebook.com/oauth/authorize?" +
-                urllib.urlencode(args))
+            args["scope"] = "user_photos,user_videos,publish_stream,read_stream"
+            #self.redirect(
+            #    "https://graph.facebook.com/oauth/authorize?" +
+            #    urllib.urlencode(args) )
+            args1 = urllib.urlencode(args)
+            self.generate('fbAuth.html', {
+                   'current_user': self.current_user,
+                   'redirection': redir,
+                   'scope': "user_photos,user_videos,publish_stream,read_stream",
+                   'facebook_app_id':FACEBOOK_APP_ID})
 
 
 class LogoutHandler(BaseHandler):

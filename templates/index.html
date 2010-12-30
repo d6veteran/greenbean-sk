@@ -4,6 +4,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <title>Green Bean Me</title>
         <link rel="stylesheet" type="text/css" href="static/css/styles.css">
+	  
+	  
+
         
     </head>
     <body>
@@ -30,14 +33,33 @@
 		      
                        	<!-- MAINBAR --> 
                        	<div id="mainbar">
+			  <div id="fb-root"></div>
+ <script src="http://connect.facebook.net/en_US/all.js"></script>
+       	<script>
+       		window.fbAsyncInit = function() {
+       			FB.init({appId: '13641208923', status: true, cookie: true, xfbml: true});
+       			FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
+       				window.location.reload();
+       			});
+       			FB.Canvas.setAutoResize();
+    		};
+    		(function() {
+       			var e = document.createElement('script');
+       			e.type = 'text/javascript';
+       			e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+       			e.async = true;
+       			document.getElementById('fb-root').appendChild(e);
+    		}());
+    	</script>
+
                            	<!-- user-profile: container for the user's avatar and name. -->
                            	<div class="user-profile">
-                           		{% if current_user %}      
+                           	{% if current_user %}      
                                	<div class="profile-image">
-                                   	<a href="{{ current_user.profile_url }}"><img src="http://graph.facebook.com/{{ current_user.fb_id }}/picture?type=square"/></a></p>                                    
+                                   	<a href="{{ current_user.profile_url }}"><img src="http://graph.facebook.com/{{ current_user.fb_id }}/picture?type=square"/></a></p>
                                	</div>
                                	<div class="profile-name">
-                                   	<h2>{{ current_user.name|escape }}</h2>
+                                   	<h2>{{ current_user.name|escape }} ({{current_user.userBeans}})</h2>
 					<p><a href="/auth/logout">Log out</a></p>
                                	</div>
 				    {% else %}
