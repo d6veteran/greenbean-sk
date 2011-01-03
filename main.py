@@ -38,7 +38,8 @@ from google.appengine.ext.webapp import template
 
 ############################# WEBSITE HANDLERS ###############################
 
-
+#TODO: not sure on the design patter for this, but handlers need to be rewritten
+# to handle both website and iframe displays.
 
 
 
