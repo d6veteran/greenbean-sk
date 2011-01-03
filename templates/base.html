@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>{% block title %}Greenbean - Test{%%}</title>
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css">
+    <script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
+    </head>
+  <body>
+    <div id="container">
+
+    	<!-- HEADER --> 
+      <div id="header">
+        <div id="logo"></div>
+        <div id="content-top"></div>
+        <!--
+        <div class="button">
+          <fb:login-button autologoutlink="true" perms="read_stream,publish_stream"></fb:login-button>
+        </div>
+        -->
+      </div>
+
+      <!-- MAIN CONTENT --> 
+      <div id="content">
+        <div id="content-middle">
+        	<div id="bar-wrapper">
+						{% block main %}
+						{% endblock  %}
+						
+						{% block sidebar%}
+						{% endblock %}						
+
+          </div><!-- /bar-wrapper -->
+        </div><!-- /content-middle -->
+      </div><!-- /content -->
+
+      <!-- FOOTER --> 
+      <div id="footer">
+      	<div id="content-bottom"></div>                  
+      </div>
+    </div><!-- /container -->
+
+		<!-- Facebook Authentication -->
+		<div id="fb-root"></div>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({appId: '13641208923', status: true, cookie: true, 
+               xfbml: true});
+        FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
+          window.location.reload();
+        });
+        FB.Canvas.setAutoResize();
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+  </body>
+</html>

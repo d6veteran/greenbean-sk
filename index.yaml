@@ -21,3 +21,9 @@ indexes:
   - name: status_id
   - name: date
     direction: desc
+
+- kind: Brag
+  properties:
+  - name: user
+  - name: create_date
+    direction: desc

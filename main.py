@@ -36,6 +36,14 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 
+############################# WEBSITE HANDLERS ###############################
+
+
+
+
+
+############################# FACEBOOK HANDLERS ##############################
+
     
 class BaseHandler(webapp.RequestHandler):
     @property
