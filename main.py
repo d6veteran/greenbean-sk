@@ -1,16 +1,18 @@
-
-"""Cool Beans base app"""
-
 #Web enabled
 #app name = sampyxisstockwatcher
-FACEBOOK_APP_ID = "157819884231043"
-FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
+#FACEBOOK_APP_ID = "157819884231043"
+#FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
 #local
 #app name - coolbeans-local
 #FACEBOOK_APP_ID = "13641208923"
 #FACEBOOK_APP_SECRET = "71e4b7fea11728cd8e0c022801b278b1"
-SITE="gbsamtest"
+#SITE="gbsamtest"
 #SITE="mymicrodonations"
+## LOCALHOST:8080
+FACEBOOK_APP_ID = "174331539272451"
+FACEBOOK_APP_SECRET = "f4f8e3762a2abbe62dee8bf44a4967a4"
+SITE="localhosttest-sk"
+
 # local site: http://apps.facebook.com/mymicrodonations/
 _DEBUG = True
 
@@ -29,6 +31,7 @@ import urllib
 import wsgiref.handlers
 import models
 import facebook
+import re
 
 from django.utils import simplejson as json
 from google.appengine.ext import db
@@ -36,17 +39,9 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 
-############################# WEBSITE HANDLERS ###############################
-
-#TODO: not sure on the design patter for this, but handlers need to be rewritten
-# to handle both website and iframe displays.
-
-
-
-############################# FACEBOOK HANDLERS ##############################
-
+############################# REQUEST HANDLERS ###############################
     
-class BaseHandler(webapp.RequestHandler):
+class MainHandler(webapp.RequestHandler):
     @property
     def current_user(self):
         if not hasattr(self, "_current_user"):
@@ -66,11 +61,9 @@ class BaseHandler(webapp.RequestHandler):
         return self._current_user
     
     def generate(self, template_name, template_values={}):
-
         # Get a list of categories
         cat_query = models.Category.all()
         cats = cat_query.fetch(10)
-        
         values = {
             'request': self.request,
             'user': self.current_user,
@@ -81,8 +74,130 @@ class BaseHandler(webapp.RequestHandler):
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, os.path.join('templates', template_name))
         self.response.out.write(template.render(path, values, debug=_DEBUG))
-    
 
+class BaseHandler(MainHandler):
+    """Returns content for the home page.
+    """
+    def get(self):
+        # TODO: build lists of top users, categories and locations.
+        logging.info("#############  BaseHandler:: get(self): ##############")
+        text = "TODO: build lists of top users, categories and locations."
+        if facebookRequest(self.request):
+            template = "facebook/fb_base_index.html"
+            
+        else:    
+            template = "base_index.html"
+        
+        self.generate(template, {
+                      'text': text,
+                      'current_user':self.current_user,
+                      'facebook_app_id':FACEBOOK_APP_ID})
+
+class UserProfile(MainHandler):
+    """Returns content for User Profile pages.
+    """
+    def get(self, user_id=None):
+        brag_query = models.Brag.all().order('-create_date')
+        user = self.current_user
+        brag_query = brag_query.filter('user', user)
+        brags = brag_query.fetch(20)
+        newBrag = []        
+        catList = []
+        for i in brags: # get Bean count and Categories for Brags
+           brag = i
+           catQuery = models.BragCategory.all()
+           catQuery = catQuery.filter("brag", brag)
+           cats = catQuery.fetch(10)
+           bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
+           bCount.fetch(1)
+           bean_count = 0
+           for count in bCount:
+            bean_count = count.bean_count
+           if cats:
+            for x in cats:
+             cat = models.Category.get(x.category.key())
+             catList.append(cat.name)
+           newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
+           catList = []
+
+        if facebookRequest(self.request):
+            template = "facebook/fb_base_user_profile.html"
+            
+        else:    
+            template = "base_user_profile.html"
+        
+        self.generate(template, {
+                      'newBrags': newBrag,
+                      'current_user': self.current_user,
+                      'facebook_app_id':FACEBOOK_APP_ID}) 
+        
+class CategoryProfile(MainHandler):
+    """Returns content for Category Profile pages.
+    """    
+    def get(self, category=None):
+        if facebookRequest(self.request):
+            template = "facebook/fb_base_category_profile.html"
+            
+        else:    
+            template = "base_category_profile.html"
+            
+        self.generate(template, {
+                      'text': text,
+                      'current_user':self.current_user,
+                      'facebook_app_id':FACEBOOK_APP_ID})  
+    
+class LocationProfile(MainHandler):
+    """Returns content for Location Profile pages.
+    """    
+    def get(self, location=None):
+        if facebookRequest(self.request):
+            template = "facebook/fb_base_location_profile.html"
+            
+        else:    
+            template = "base_location_profile.html"
+            
+        self.generate(template, {
+                      'text': text,
+                      'current_user':self.current_user,
+                      'facebook_app_id':FACEBOOK_APP_ID})   
+
+            
+"""        class HomeHandler(BaseHandler):
+            def get(self):
+
+                facebookRequest(self.request)
+
+                brag_query = models.Brag.all().order('-create_date')
+                user = self.current_user
+                brag_query = brag_query.filter('user', user)
+                brags = brag_query.fetch(20)
+                # for each brag - get the category  
+
+                newBrag = []        
+                catList = []
+                for i in brags:
+                   brag = i
+                   catQuery = models.BragCategory.all()
+                   catQuery = catQuery.filter("brag", brag)
+                   cats = catQuery.fetch(10)
+                   #get bean count for brag
+                   bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
+                   bCount.fetch(1)
+                   bean_count = 0
+                   for count in bCount:
+                    bean_count = count.bean_count
+                   if cats:
+                    for x in cats:
+                     cat = models.Category.get(x.category.key())
+                     catList.append(cat.name)
+                   newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
+                   catList = []
+
+                self.generate('index.html', {
+                               'newBrags': newBrag,
+                               'current_user': self.current_user,
+                               'facebook_app_id':FACEBOOK_APP_ID})
+"""
 class postStatus(BaseHandler):
     def post(self):
 
@@ -243,40 +358,6 @@ class voteBean(BaseHandler):
             
             #Now do the same for location
         self.redirect('/')
-        
-class HomeHandler(BaseHandler):
-    def get(self):
-
-        brag_query = models.Brag.all().order('-create_date')
-        user = self.current_user
-        brag_query = brag_query.filter('user', user)
-        brags = brag_query.fetch(20)
-        # for each brag - get the category  
-               
-        newBrag = []        
-        catList = []
-        for i in brags:
-           brag = i
-           catQuery = models.BragCategory.all()
-           catQuery = catQuery.filter("brag", brag)
-           cats = catQuery.fetch(10)
-           #get bean count for brag
-           bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
-           bCount.fetch(1)
-           bean_count = 0
-           for count in bCount:
-            bean_count = count.bean_count
-           if cats:
-            for x in cats:
-             cat = models.Category.get(x.category.key())
-             catList.append(cat.name)
-           newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
-           catList = []
-            
-        self.generate('index.html', {
-                       'newBrags': newBrag,
-                       'current_user': self.current_user,
-                       'facebook_app_id':FACEBOOK_APP_ID})
 
         
 # New oauth facebook code
@@ -332,6 +413,22 @@ class LogoutHandler(BaseHandler):
         self.redirect("/")
 
 
+############################### METHODS ######################################
+
+def facebookRequest(request):
+    """Returns True if request is from a Facebook iFrame, otherwise False.
+    """
+    try:
+        referer = request.headers["Referer"]
+        logging.info("############# Referer = " + referer + "###############")
+    except KeyError:
+        return False    
+    if re.search(r".*apps\.facebook\.com.*", referer): # match a Facebook apps uri
+        logging.info("############### facebook.com detected! ###############")
+        return True
+    else:
+        return False
+
 def set_cookie(response, name, value, domain=None, path="/", expires=None):
     """Generates and signs a cookie for the give name/value"""
     timestamp = str(int(time.time()))
@@ -345,7 +442,6 @@ def set_cookie(response, name, value, domain=None, path="/", expires=None):
         cookie[name]["expires"] = email.utils.formatdate(
             expires, localtime=False, usegmt=True)
     response.headers._headers.append(("Set-Cookie", cookie.output()[12:]))
-
 
 def parse_cookie(value):
     """Parses and verifies a cookie value from set_cookie"""
@@ -364,7 +460,6 @@ def parse_cookie(value):
     except:
         return None
 
-
 def cookie_signature(*parts):
     """Generates a cookie signature.
 
@@ -375,17 +470,17 @@ def cookie_signature(*parts):
     for part in parts: hash.update(part)
     return hash.hexdigest()
 
-
-    
 def main():
-    util.run_wsgi_app(webapp.WSGIApplication([(r"/", HomeHandler),
+    util.run_wsgi_app(webapp.WSGIApplication([(r'/', BaseHandler),
+                                              (r'/user/(.*)', UserProfile),
+                                              (r'/category/(.*)', CategoryProfile),  
+                                              (r'/location/(.*)', LocationProfile),       
                                               ('/sign', postStatus),
                                               ('/user', User),
                                               ('/vote', voteBean),
-                                              (r"/auth/login", LoginHandler),
-                                              (r"/auth/logout", LogoutHandler)],
+                                              (r'/auth/login', LoginHandler),
+                                              (r'/auth/logout', LogoutHandler)],
                                               debug=True))
-
-
+##############################################################################
 if __name__ == "__main__":
     main()
