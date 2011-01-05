@@ -26,8 +26,14 @@ body { background-color: #eee9dc; }
 
 /*HEADER*/
 #header { width: 100%; }
-#logo { background-image: url("../images/logo.png"); width: 280px; height: 76px; margin-left: 224px; }
+#top { height: 80px; }
+#logo { background-image: url("../images/logo.png"); width: 280px; height: 76px; margin-left: 20px; float: left; }
+#fb-login { margin: 4px 26px 4px 0px; width: 260px; float: right; }
+#fb-button { float: left; }
+#fb-profile { float: left; padding-right: 12px; }
+#fb-profile img { border: 3px solid #222; }
 #content-top { background: url("../images/content-top.png") no-repeat scroll center top transparent; width: 720px; height: 40px; }
+
 
 /*MAIN*/
 #content { }

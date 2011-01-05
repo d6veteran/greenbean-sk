@@ -14,7 +14,7 @@ FACEBOOK_APP_SECRET = "f4f8e3762a2abbe62dee8bf44a4967a4"
 SITE="localhosttest-sk"
 
 # local site: http://apps.facebook.com/mymicrodonations/
-_DEBUG = True
+DEBUG = True
 
 #local
 
@@ -42,38 +42,43 @@ from google.appengine.ext.webapp import template
 ############################# REQUEST HANDLERS ###############################
     
 class MainHandler(webapp.RequestHandler):
+    """Provides access to the active Facebook user in self.current_user
+
+    The property is lazy-loaded on first access, using the cookie saved
+    by the Facebook JavaScript SDK to determine the user ID of the active
+    user. See http://developers.facebook.com/docs/authentication/ for
+    more information.
+    """
     @property
     def current_user(self):
+        logging.info('########### BaseHandler:: current_user ###########')
         if not hasattr(self, "_current_user"):
-            
             self._current_user = None
-            user_id = parse_cookie(self.request.cookies.get("fb_user"))
-            if user_id:
-                self._current_user = models.User.get_by_key_name(user_id)
-                
-                # Get number of beans for this user
-                # Put it in the user packet
-                userB = db.GqlQuery("SELECT * FROM UserBeans WHERE user =:1", self._current_user.key())
-                userB.fetch(1)
-                for count in userB:
-                    self._current_user.userBeans = count.bean_count
-                                                
+            cookie = facebook.get_user_from_cookie(
+                self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
+            if cookie:
+                # Store a local instance of the user data so we don't need
+                # a round-trip to Facebook on every request
+                user = models.User.get_by_key_name(cookie["uid"])
+                if not user:
+                    graph = facebook.GraphAPI(cookie["access_token"])
+                    profile = graph.get_object("me")
+                    user = models.User(key_name=str(profile["id"]),
+                                       fb_id=str(profile["id"]),
+                                       name=profile["name"],
+                                       fb_profile_url=profile["link"],
+                                       access_token=cookie["access_token"])
+                    user.put()
+                elif user.access_token != cookie["access_token"]:
+                    user.access_token = cookie["access_token"]
+                    user.put()
+                self._current_user = user
         return self._current_user
     
-    def generate(self, template_name, template_values={}):
-        # Get a list of categories
-        cat_query = models.Category.all()
-        cats = cat_query.fetch(10)
-        values = {
-            'request': self.request,
-            'user': self.current_user,
-            'debug': self.request.get('deb'),
-            'application_name': 'Green Bean',
-            'categories': cats}
-        values.update(template_values)
+    def generate(self, template_name, template_values):
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, os.path.join('templates', template_name))
-        self.response.out.write(template.render(path, values, debug=_DEBUG))
+        self.response.out.write(template.render(path, template_values, debug=DEBUG))
 
 class BaseHandler(MainHandler):
     """Returns content for the home page.
@@ -83,11 +88,9 @@ class BaseHandler(MainHandler):
         logging.info("#############  BaseHandler:: get(self): ##############")
         text = "TODO: build lists of top users, categories and locations."
         if facebookRequest(self.request):
-            template = "facebook/fb_base_index.html"
-            
+            template = "facebook/fb_base_index.html"            
         else:    
-            template = "base_index.html"
-        
+            template = "base_index.html"        
         self.generate(template, {
                       'text': text,
                       'current_user':self.current_user,
@@ -97,9 +100,12 @@ class UserProfile(MainHandler):
     """Returns content for User Profile pages.
     """
     def get(self, user_id=None):
+        logging.info('################# UserProfile::get ###################')
+        user = self.current_user # this is the logged in User
+        profile_user_query = models.User.all().filter('fb_id =', user_id)
+        profile_user = profile_user_query.get() # this is the profiled User
         brag_query = models.Brag.all().order('-create_date')
-        user = self.current_user
-        brag_query = brag_query.filter('user', user)
+        brag_query = brag_query.filter('user', profile_user)
         brags = brag_query.fetch(20)
         newBrag = []        
         catList = []
@@ -128,8 +134,16 @@ class UserProfile(MainHandler):
         
         self.generate(template, {
                       'newBrags': newBrag,
+                      'profile_user': profile_user,
                       'current_user': self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID}) 
+                      
+    def post(self):
+        logging.info('################## UserProfile::post #################')
+        user = self.current_user
+        mid = self.request.get('mid')
+    
+                      
         
 class CategoryProfile(MainHandler):
     """Returns content for Category Profile pages.
@@ -160,7 +174,7 @@ class LocationProfile(MainHandler):
                       'text': text,
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})   
-
+    
             
 """        class HomeHandler(BaseHandler):
             def get(self):
@@ -197,7 +211,7 @@ class LocationProfile(MainHandler):
                                'newBrags': newBrag,
                                'current_user': self.current_user,
                                'facebook_app_id':FACEBOOK_APP_ID})
-"""
+
 class postStatus(BaseHandler):
     def post(self):
 
@@ -335,7 +349,7 @@ class voteBean(BaseHandler):
                 userBeans.bean_count = i +1
                 userBeans.put()
 
-                """ Arg...can't get this to work yet!
+                 Arg...can't get this to work yet!
                 #Now do the same for categories
                 
                 for category in brag.category:
@@ -354,7 +368,7 @@ class voteBean(BaseHandler):
                         i = 1
                     catQuery.bean_count = i + 1
                     catQuery.put()
-                    """
+                  
             
             #Now do the same for location
         self.redirect('/')
@@ -411,7 +425,7 @@ class LogoutHandler(BaseHandler):
     def get(self):
         set_cookie(self.response, "fb_user", "", expires=time.time() - 86400)
         self.redirect("/")
-
+"""
 
 ############################### METHODS ######################################
 
@@ -429,58 +443,14 @@ def facebookRequest(request):
     else:
         return False
 
-def set_cookie(response, name, value, domain=None, path="/", expires=None):
-    """Generates and signs a cookie for the give name/value"""
-    timestamp = str(int(time.time()))
-    value = base64.b64encode(value)
-    signature = cookie_signature(value, timestamp)
-    cookie = Cookie.BaseCookie()
-    cookie[name] = "|".join([value, timestamp, signature])
-    cookie[name]["path"] = path
-    if domain: cookie[name]["domain"] = domain
-    if expires:
-        cookie[name]["expires"] = email.utils.formatdate(
-            expires, localtime=False, usegmt=True)
-    response.headers._headers.append(("Set-Cookie", cookie.output()[12:]))
-
-def parse_cookie(value):
-    """Parses and verifies a cookie value from set_cookie"""
-    if not value: return None
-    parts = value.split("|")
-    if len(parts) != 3: return None
-    if cookie_signature(parts[0], parts[1]) != parts[2]:
-        logging.warning("Invalid cookie signature %r", value)
-        return None
-    timestamp = int(parts[1])
-    if timestamp < time.time() - 30 * 86400:
-        logging.warning("Expired cookie %r", value)
-        return None
-    try:
-        return base64.b64decode(parts[0]).strip()
-    except:
-        return None
-
-def cookie_signature(*parts):
-    """Generates a cookie signature.
-
-    We use the Facebook app secret since it is different for every app (so
-    people using this example don't accidentally all use the same secret).
-    """
-    hash = hmac.new(FACEBOOK_APP_SECRET, digestmod=hashlib.sha1)
-    for part in parts: hash.update(part)
-    return hash.hexdigest()
 
 def main():
     util.run_wsgi_app(webapp.WSGIApplication([(r'/', BaseHandler),
                                               (r'/user/(.*)', UserProfile),
+                                              ('/post-brag', UserProfile),
                                               (r'/category/(.*)', CategoryProfile),  
-                                              (r'/location/(.*)', LocationProfile),       
-                                              ('/sign', postStatus),
-                                              ('/user', User),
-                                              ('/vote', voteBean),
-                                              (r'/auth/login', LoginHandler),
-                                              (r'/auth/logout', LogoutHandler)],
-                                              debug=True))
+                                              (r'/location/(.*)', LocationProfile)],
+                                              debug=DEBUG))
 ##############################################################################
 if __name__ == "__main__":
     main()

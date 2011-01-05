@@ -30,7 +30,7 @@ body { background-color: #eee9dc; }
 #content-top { background: url("../images/content-top.png") no-repeat scroll center top transparent; width: 720px; height: 40px; }
 
 /*MAIN*/
-#content { }
+#content { max-height: 680px; }
 #content-middle { background: url("../images/content-mid.png") repeat-y scroll center top transparent; position: relative; width: 720px; float: left; }
 #bar-wrapper { margin-left: 24px; width: 100%; }
 

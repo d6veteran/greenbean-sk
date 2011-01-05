@@ -21,14 +21,21 @@ class Location(db.Model):
 # User needs to accomodate both FB, Twitter and Google.  Not sure if this is 
 # possible.
 class User(db.Model):
-  name = db.StringProperty(required=True)
-  profile_url = db.StringProperty(required=True)
-  fb_access_token = db.StringProperty(required=True)
-  fb_id = db.StringProperty(required=True)
-  created = db.DateTimeProperty(auto_now_add=True)
-  updated = db.DateTimeProperty(auto_now=True)
-  # TODO: provide a common way to define places for Users of FB, Twitter . . .
-  current_location = db.ReferenceProperty(Location, required=False)
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
+    name = db.StringProperty(required=True)
+    fb_id = db.StringProperty(required=True)
+    fb_profile_url = db.StringProperty(required=True)
+    access_token = db.StringProperty(required=True)
+    #TODO: provide a common way to define places for Users of FB, Twitter . . .
+    #current_location = db.ReferenceProperty(Location, required=False)    
+    #name = db.StringProperty(required=True)
+    #profile_url = db.StringProperty(required=True)
+    #fb_access_token = db.StringProperty(required=True)
+    #created = db.DateTimeProperty(auto_now_add=True)
+    #updated = db.DateTimeProperty(auto_now=True)
+    # TODO: provide a common way to define places for Users of FB, Twitter . . .
+    #current_location = db.ReferenceProperty(Location, required=False)
 
 # Category provides taxonomy for Brags.
 class Category(db.Model):
