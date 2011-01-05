@@ -23,20 +23,20 @@
 		{% ifequal current_user.fb_id profile_user.fb_id %}
     <div id="brag-form">
       <h3>Doing something Green? Share it and earn rewards.</h3> 
-   	  <form name="input" action=""> 
+   	  <form name="input" action="/user/{{profile_user.fb_id}}" method="post"> 
       	<div id="text-box">
-  				<textarea class="text-area" name="content" rows="3" cols="46"></textarea>
+  				<textarea class="text-area" id="message" name="message" rows="3" cols="46"></textarea>
         </div>
         <div id="tag-list">
         	<ul>
-          {% for category in categories %}
+          {% for c in categories %}
           	<li>
-            	<input name="cat_checks" type="checkbox" value="{{category.key}}" />{{ category.name }}<br />
+            	<label><input name="category" type="checkbox" value="{{c}}" />{{c}}</label>
             </li>
           {%endfor %}
           </ul>
         </div>
-				<input type="hidden" name="fb_id" value"{{profile_user.bf_id}}"/>
+				<input type="hidden" id="origin" name="origin" value="facebook"/>
         <div id="submit-button">
 					<input type="submit" name="submit" class="button" id="share-button" value="Share" >
 				</div>
@@ -45,7 +45,7 @@
 		{% endifequal %}
     <!-- brag-list: container for list of Brags. --> 
     <div id="brag-list">
-    {% for brag in newBrags %}
+    {% for brag in brags %}
     	<!-- brag-entry: container for a single Brag -->
       <div class="brag-entry">
       	<div class="brag-vote">
@@ -57,8 +57,8 @@
         </div>          
         <div class="brag-meta">
          	<p>{{brag.brag.create_date|timesince}}- 
-           	{% for cat in brag.brag.category%}
-            <a href="#">#{{cat}} </a>
+           	{% for c in brag.brag.categories%}
+            <a href="#">#{{c}} </a>
             {%endfor%}
           </p>
         </div>          
@@ -83,7 +83,7 @@
           <li>Earn beans for you and your community and win prizes.</li>
         </ul>
         <div id="start-button">
-					<a href="#"><img src="static/images/get-beans-button.png"/></a>
+					<a href="#"><img src="/static/images/get-beans-button.png"/></a>
 				</div>
       </div>
     </div>

@@ -12,6 +12,8 @@
 FACEBOOK_APP_ID = "174331539272451"
 FACEBOOK_APP_SECRET = "f4f8e3762a2abbe62dee8bf44a4967a4"
 SITE="localhosttest-sk"
+CATS=["Reduse","Reuse","Recycle","Organic","Wind","Solar",
+      "Walk","Bus","Bike","Local","Carpool"]
 
 # local site: http://apps.facebook.com/mymicrodonations/
 DEBUG = True
@@ -102,8 +104,7 @@ class UserProfile(MainHandler):
     def get(self, user_id=None):
         logging.info('################# UserProfile::get ###################')
         user = self.current_user # this is the logged in User
-        profile_user_query = models.User.all().filter('fb_id =', user_id)
-        profile_user = profile_user_query.get() # this is the profiled User
+        profile_user = getFBUser(fb_id=user_id) # this is the profiled User
         brag_query = models.Brag.all().order('-create_date')
         brag_query = brag_query.filter('user', profile_user)
         brags = brag_query.fetch(20)
@@ -111,20 +112,13 @@ class UserProfile(MainHandler):
         catList = []
         for i in brags: # get Bean count and Categories for Brags
            brag = i
-           catQuery = models.BragCategory.all()
-           catQuery = catQuery.filter("brag", brag)
-           cats = catQuery.fetch(10)
            bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
            bCount.fetch(1)
            bean_count = 0
            for count in bCount:
-            bean_count = count.bean_count
-           if cats:
-            for x in cats:
-             cat = models.Category.get(x.category.key())
-             catList.append(cat.name)
-           newBrag.append({'cats':catList, 'brag':i, 'bCount':bean_count})
-           catList = []
+             bean_count = count.bean_count
+           newBrag.append({'brag':i, 'bCount':bean_count})
+           
 
         if facebookRequest(self.request):
             template = "facebook/fb_base_user_profile.html"
@@ -133,22 +127,33 @@ class UserProfile(MainHandler):
             template = "base_user_profile.html"
         
         self.generate(template, {
-                      'newBrags': newBrag,
+                      'brags': newBrag,
                       'profile_user': profile_user,
+                      'categories': CATS,
                       'current_user': self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID}) 
                       
-    def post(self):
+    def post(self, user_id=None):
+        """POSTs a new Brag.
+        """
         logging.info('################## UserProfile::post #################')
-        user = self.current_user
-        mid = self.request.get('mid')
-    
-                      
+        user = getFBUser(fb_id=user_id) # this is the profiled User
+        message = self.request.get('message')
+        origin = self.request.get('origin')
+        categories = self.request.get_all('category')
+        brag = models.Brag(user = user,
+                           categories = categories,
+                           message = message,
+                           origin = origin)
+        brag.put()
+        self.redirect('/user/'+user_id)  
+        return          
         
 class CategoryProfile(MainHandler):
     """Returns content for Category Profile pages.
     """    
     def get(self, category=None):
+        logging.info('################ CategoryProfile::get ################')
         if facebookRequest(self.request):
             template = "facebook/fb_base_category_profile.html"
             
@@ -164,6 +169,7 @@ class LocationProfile(MainHandler):
     """Returns content for Location Profile pages.
     """    
     def get(self, location=None):
+        logging.info('################ LocationProfile::get ################')        
         if facebookRequest(self.request):
             template = "facebook/fb_base_location_profile.html"
             
@@ -443,11 +449,17 @@ def facebookRequest(request):
     else:
         return False
 
+def getFBUser(fb_id=None):
+    """Returns a User for the given fb_id.
+    """
+    logging.info("################ getFBUser("+fb_id+") ####################")
+    user_query = models.User.all().filter('fb_id =', fb_id)
+    user = user_query.get() # this is the profiled User
+    return user
 
 def main():
     util.run_wsgi_app(webapp.WSGIApplication([(r'/', BaseHandler),
                                               (r'/user/(.*)', UserProfile),
-                                              ('/post-brag', UserProfile),
                                               (r'/category/(.*)', CategoryProfile),  
                                               (r'/location/(.*)', LocationProfile)],
                                               debug=DEBUG))

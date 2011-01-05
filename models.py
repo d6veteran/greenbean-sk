@@ -50,13 +50,12 @@ class Category(db.Model):
 #notes: once category_ref working - take out the other category and rename this
 # field to category
 class Brag(db.Model):
-  message = db.StringProperty(required=True, validator=check_length)
-  create_date = db.DateTimeProperty(auto_now_add=True)
-  category = db.StringListProperty(db.StringProperty)
-  category_ref = db.ReferenceProperty(Category)
+  message = db.StringProperty(required=True)
+  categories = db.StringListProperty(db.StringProperty)
   user = db.ReferenceProperty(User, required=True)
   location = db.ReferenceProperty(Location, required=False)
   origin = db.StringProperty(required=True)
+  create_date = db.DateTimeProperty(auto_now_add=True)
 
 # Many to Many relationship - Brag to Category
 class BragCategory(db.Model):

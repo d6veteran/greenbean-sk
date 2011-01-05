@@ -6,26 +6,28 @@
     <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
     <script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-		<script type="text/javascript">
+		<!--<script type="text/javascript">
 	  	$(function() {  
 	      $('.error').hide();  
 	      $("#share-button").click(function() { 
-		      var fb_id = $("input#fb_id").val();
-		      var dataString = 'fb_id='+ fb_id;  
+		      var fb_id = $("input#fb-id").val();
+		      var message = $("#message").val();
+		      var origin = $("input#origin").val();
+		      var dataString = 'origin=' + origin+'&message='+message+'&fb_id='+ fb_id;  
 					//alert (dataString);return false;  
 					$.ajax({  
 						type: "POST",  
 					  url: "/post-brag",  
-					  data: dataString,  
-					  success: function() {  
-					  	$('#brag-form').html("<div id='message'></div>");  
-					    $('#message').html("<h2>Green status posted!</h2>");  
-					  }  
+					  data: dataString//,  
+					  //success: function() {  
+					  //	$('#brag-form').html("<div id='message'></div>");  
+					  //  $('#info-message').html("<h2>Green status posted!</h2>");  
+					  //}  
 					});  
 					return false;
 	    	});  
 	   	});
-		</script>
+		</script>-->
 
     </head>
   <body>
@@ -35,14 +37,14 @@
       <div id="header">
 				<div id="top">
 					<div id="logo"></div>
-					<div id="fb-login">
+					<div id="fb-login"><!--
 			    	{% if current_user %}
 			      <div id="fb-profile">
 							<a href="{{ current_user.fb_profile_url }}">
 								<img src="http://graph.facebook.com/{{ current_user.fb_id }}/picture?type=square"/>
 							</a>
 						</div>
-			    	{% endif %}
+			    	{% endif %}-->
 						<div id="fb-button">
 							<fb:login-button autologoutlink="true" perms="publish_checkins,publish_stream"></fb:login-button>
 						</div>

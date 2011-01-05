@@ -13,6 +13,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 body { font-family: Georgia,"Times New Roman",Times,serif; line-height: 1.4em; }
 a { color: #81290D; cursor: pointer; outline: medium none; text-decoration: none; }
 #brag-form h3, #sidebar h3 { color: #81290D; font-size: 16px; font-weight: normal; padding-bottom: 4px; }
+#tag-list label { white-space:nowrap; }
 #mainbar .user-profile h2 { color: #81290D; font-size: 20px; font-weight: normal; text-transform: uppercase; }
 #brag-list .brag-vote a, .user-beans p { font-size: 12px; }
 #brag-list .brag-entry p, #sidebar p, #sidebar ul { font-size: 16px; padding-top: 8px; color: #636363; }
@@ -29,7 +30,7 @@ body { background-color: #eee9dc; }
 #top { height: 80px; }
 #logo { background-image: url("../images/logo.png"); width: 280px; height: 76px; margin-left: 20px; float: left; }
 #fb-login { margin: 4px 26px 4px 0px; width: 260px; float: right; }
-#fb-button { float: left; }
+#fb-button { float: right; }
 #fb-profile { float: left; padding-right: 12px; }
 #fb-profile img { border: 3px solid #222; }
 #content-top { background: url("../images/content-top.png") no-repeat scroll center top transparent; width: 720px; height: 40px; }

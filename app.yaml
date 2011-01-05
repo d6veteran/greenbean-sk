@@ -1,4 +1,4 @@
-application: sampyxisstockwatcher
+application: greenbean-sk
 version: 1
 runtime: python
 api_version: 1
