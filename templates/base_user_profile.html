@@ -49,16 +49,20 @@
     	<!-- brag-entry: container for a single Brag -->
       <div class="brag-entry">
       	<div class="brag-vote">
-        	<div class="vote-count">{{brag.bCount}}</div>
-          <a href='/vote?id={{brag.brag.key}}'>vote+</a>
-        </div>
+       		<div class="vote-count">{{brag.bCount}}</div>
+           	<a href='/vote?id={{brag.brag.key}}'>vote+</a>
+					<form>
+						<input type="hidden" id="voter" name="voter" value="{{current_user.fb_id}}">
+						<input type="submit">
+        	</form>
+				</div>
         <div class="brag-message">
         	<p>{{ brag.brag.message|escape }}</p>
         </div>          
         <div class="brag-meta">
-         	<p>{{brag.brag.create_date|timesince}}- 
+         	<p>{{brag.brag.create_date|timesince}} ago - 
            	{% for c in brag.brag.categories%}
-            <a href="#">#{{c}} </a>
+            <a href="/category/{{c}}">#{{c}} </a>
             {%endfor%}
           </p>
         </div>          
