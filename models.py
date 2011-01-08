@@ -12,7 +12,6 @@ class User(db.Model):
     #TODO: provide a common way to define places for Users of FB, Twitter . . .
     #current_location = db.ReferenceProperty(Location, required=False) 
 
-
 # Location provides place context for Brags.
 class Location(db.Model):
    city = db.StringProperty(required=True)
@@ -26,10 +25,12 @@ class Location(db.Model):
 # like Facebook or Twitter.
 class Brag(db.Model):
   message = db.StringProperty(required=True)
-  categories = db.StringListProperty(db.StringProperty)
-  user = db.ReferenceProperty(User, required=True)
-  location = db.ReferenceProperty(Location, required=False)
   origin = db.StringProperty(required=True)
+  user = db.ReferenceProperty(User, required=True)
+  categories = db.StringListProperty(db.StringProperty)
+  beans = db.IntegerProperty(required=False)
+  voter_keys = db.StringListProperty(db.StringProperty)
+  location = db.ReferenceProperty(Location, required=False)
   create_date = db.DateTimeProperty(auto_now_add=True)
 
 class Category(db.Model):

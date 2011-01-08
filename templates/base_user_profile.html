@@ -49,11 +49,12 @@
     	<!-- brag-entry: container for a single Brag -->
       <div class="brag-entry">
       	<div class="brag-vote">
-       		<div class="vote-count">{{brag.bCount}}</div>
-           	<a href='/vote?id={{brag.brag.key}}'>vote+</a>
-					<form>
-						<input type="hidden" id="voter" name="voter" value="{{current_user.fb_id}}">
-						<input type="submit">
+
+					<form class="vote-form" action="">
+       		<div id="{{brag.brag.key}}" class="vote-count">{{brag.bCount}}</div>
+          	<input class="vote-button" type="submit" class="text-button" value="vote+"/>
+						<input type="hidden" class="brag" name="brag" value="{{brag.brag.key}}">
+						<input type="hidden" class="voter" name="voter" value="{{current_user.fb_id}}">
         	</form>
 				</div>
         <div class="brag-message">

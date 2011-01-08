@@ -180,9 +180,99 @@ class LocationProfile(MainHandler):
                       'text': text,
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})   
+
+class Bean(MainHandler):
+    """Updates bean count for a Brag and associated Categories, Users and
+    Locations.
+    """
+    def post(self):    
+        logging.info('################ Bean::post ################') 
+        brag_key = self.request.get('brag') 
+        voter_fb_id = self.request.get('voter')
+        user = self.current_user
+        logging.info('################ brag_key =' + brag_key + '###########') 
+        logging.info('################ voter_fb_id =' + voter_fb_id + '#####') 
+        brag = db.Brag.get(grag_key)
+        if brag is not None:
+            if brag.beans[voter_fb_id] is not None:
+                brag.beans.append(voter_fb_id)
+                i = brag.bean_count
+                if i == None:
+                        i = 1
+                brag.bean_count =  i + 1
+                brag.put()
+        
+        
+        
+        self.response.out.write("testing")
+
+
+        """
+        class voteBean(BaseHandler):
+            # Need error checking
+             def get(self):
+                key = self.request.get('id')
+                brag = models.Brag.get(key)
+                user = self.current_user
+
+                if (brag and user):
+                    # create bean
+                    # User can only vote for a Bean once, so make sure they haven't already voted
+                    # do a query using both brag and user
+                    # if none - then put
+                    q = db.GqlQuery("select * from Bean where user =:1 and brag=:2", user.key(), brag.key())
+                    count = q.count(1)
+                    if count == 0:
+                        bean = models.Bean(brag = brag, user = user).put()
+
+                        # now that the bean is in - add the vote
+                        # So, we're using get_or_insert here - using the key_name (which for us is the key from the brag
+                        #  this insures that it's unique)
+                        bragKey = str(brag.key())
+                        bragbeans = models.BragBeans.get_or_insert(bragKey, brag=brag, bean_count=0)
+                        #if bragbeans:
+                        i = bragbeans.bean_count
+                        if i == None:
+                                i = 1
+                        bragbeans.bean_count =  i + 1
+                        bragbeans.put()
+
+                        #Now sum the total beans per user
+                        #Create the row in UserBeans the first time the user gets a vote
+                        userKey = str(user.key())
+                        userBeans = models.UserBeans.get_or_insert(userKey, user=user, bean_count=0)
+                        i = userBeans.bean_count
+                        if i == None:
+                            i = 1
+                        userBeans.bean_count = i +1
+                        userBeans.put()
+
+                         Arg...can't get this to work yet!
+                        #Now do the same for categories
+
+                        for category in brag.category:
+                            catKey = models.Category.all().filter("name", category).fetch(1)
+                            print(catKey)
+                            #caKey = str(catKey.key())
+                            c = models.Category.get('ag9jb29sYmVhbnMtbG9jYWxyDgsSCENhdGVnb3J5GHYM')
+                            print(c.name)
+                            catBean = models.CategoryBeans.get_or_insert(c.key(), category=category, bean_count=0)
+                            #catQuery = db.GqlQuery("select bean_count from CategoryBeans where category =:1", category)
+                            #catQuery.fetch(1)
+        #                    catQuery = models.CategoryBeans.all().filter("name", categories).fetch(1)
+                            print(catBean.bean_count)
+                            i = catQuery.bean_count
+                            if i == None:
+                                i = 1
+                            catQuery.bean_count = i + 1
+                            catQuery.put()
+
+
+                    #Now do the same for location
+                self.redirect('/')
+
     
-            
-"""        class HomeHandler(BaseHandler):
+       class HomeHandler(BaseHandler):
             def get(self):
 
                 facebookRequest(self.request)
@@ -461,7 +551,8 @@ def main():
     util.run_wsgi_app(webapp.WSGIApplication([(r'/', BaseHandler),
                                               (r'/user/(.*)', UserProfile),
                                               (r'/category/(.*)', CategoryProfile),  
-                                              (r'/location/(.*)', LocationProfile)],
+                                              (r'/location/(.*)', LocationProfile),
+                                              ('/bean', Bean)],
                                               debug=DEBUG))
 ##############################################################################
 if __name__ == "__main__":

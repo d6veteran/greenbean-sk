@@ -6,6 +6,27 @@
     <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
     <script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script type="text/javascript">
+	  	$(function() {  
+	      $(".vote-form").submit(function() { 
+					var $thisForm = $(this);
+					var inputs =	$(this).find('input:hidden');
+					var key = $('input.brag', this).val();
+					$.ajax({  
+						type: "POST",  
+					  url: "/bean",  
+					  data: inputs,  
+					  success: function(data) {  
+							var $div = $('#' + key),
+							    intValue = parseInt($div.html(), 10);
+							$div.html(++intValue);
+							$('input.vote-button', $thisForm).hide();
+					  }  
+					});  
+					return false;
+	    	});  
+	   	});
+		</script>
 		<!--<script type="text/javascript">
 	  	$(function() {  
 	      $('.error').hide();  
@@ -69,7 +90,10 @@
 
       <!-- FOOTER --> 
       <div id="footer">
-      	<div id="content-bottom"></div>                  
+      	<div id="content-bottom"></div>   
+        <div id="footer-content">
+        	<div id="credit">Powered by <a href="http://code.google.com/appengine/">Google App Engine</a></div>
+        </div>       
       </div>
     </div><!-- /container -->
 
