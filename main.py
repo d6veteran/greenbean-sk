@@ -107,18 +107,7 @@ class UserProfile(MainHandler):
         profile_user = getFBUser(fb_id=user_id) # this is the profiled User
         brag_query = models.Brag.all().order('-create_date')
         brag_query = brag_query.filter('user', profile_user)
-        brags = brag_query.fetch(20)
-        newBrag = []        
-        catList = []
-        for i in brags: # get Bean count and Categories for Brags
-           brag = i
-           bCount = db.GqlQuery("SELECT * FROM BragBeans WHERE brag=:1", brag)
-           bCount.fetch(1)
-           bean_count = 0
-           for count in bCount:
-             bean_count = count.bean_count
-           newBrag.append({'brag':i, 'bCount':bean_count})
-           
+        brags = brag_query.fetch(10)
 
         if facebookRequest(self.request):
             template = "facebook/fb_base_user_profile.html"
@@ -127,7 +116,7 @@ class UserProfile(MainHandler):
             template = "base_user_profile.html"
         
         self.generate(template, {
-                      'brags': newBrag,
+                      'brags': brags,
                       'profile_user': profile_user,
                       'categories': CATS,
                       'current_user': self.current_user,
@@ -192,19 +181,18 @@ class Bean(MainHandler):
         user = self.current_user
         logging.info('################ brag_key =' + brag_key + '###########') 
         logging.info('################ voter_fb_id =' + voter_fb_id + '#####') 
-        brag = db.Brag.get(grag_key)
+        brag = models.Brag.get(brag_key)
         if brag is not None:
-            if brag.beans[voter_fb_id] is not None:
-                brag.beans.append(voter_fb_id)
-                i = brag.bean_count
+            if voter_fb_id not in brag.voter_keys:
+                brag.voter_keys.append(voter_fb_id)
+                i = brag.beans
                 if i == None:
                         i = 1
-                brag.bean_count =  i + 1
+                brag.beans =  i + 1
                 brag.put()
         
         
-        
-        self.response.out.write("testing")
+        return
 
 
         """

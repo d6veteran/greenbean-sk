@@ -28,7 +28,7 @@ class Brag(db.Model):
   origin = db.StringProperty(required=True)
   user = db.ReferenceProperty(User, required=True)
   categories = db.StringListProperty(db.StringProperty)
-  beans = db.IntegerProperty(required=False)
+  beans = db.IntegerProperty(required=False, default=0)
   voter_keys = db.StringListProperty(db.StringProperty)
   location = db.ReferenceProperty(Location, required=False)
   create_date = db.DateTimeProperty(auto_now_add=True)

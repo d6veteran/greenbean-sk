@@ -51,18 +51,18 @@
       	<div class="brag-vote">
 
 					<form class="vote-form" action="">
-       		<div id="{{brag.brag.key}}" class="vote-count">{{brag.bCount}}</div>
+       		<div id="{{brag.key}}" class="vote-count">{{brag.beans}}</div>
           	<input class="vote-button" type="submit" class="text-button" value="vote+"/>
-						<input type="hidden" class="brag" name="brag" value="{{brag.brag.key}}">
+						<input type="hidden" class="brag" name="brag" value="{{brag.key}}">
 						<input type="hidden" class="voter" name="voter" value="{{current_user.fb_id}}">
         	</form>
 				</div>
         <div class="brag-message">
-        	<p>{{ brag.brag.message|escape }}</p>
+        	<p>{{ brag.message|escape }}</p>
         </div>          
         <div class="brag-meta">
-         	<p>{{brag.brag.create_date|timesince}} ago - 
-           	{% for c in brag.brag.categories%}
+         	<p>{{brag.create_date|timesince}} ago - 
+           	{% for c in brag.categories%}
             <a href="/category/{{c}}">#{{c}} </a>
             {%endfor%}
           </p>
