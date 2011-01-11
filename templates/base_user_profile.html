@@ -82,6 +82,7 @@
   <!-- SIDEBAR --> 
   <div id="sidebar">
   	<div class="side-block">
+			{% ifnotequal current_user.fb_id profile_user.fb_id %}
     	<div id="start">
       	<h3>Go Green, Earn Beans!</h3>
         <ul>
@@ -89,9 +90,10 @@
           <li>Earn beans for you and your community and win prizes.</li>
         </ul>
         <div id="start-button">
-					<a href="#"><img src="/static/images/get-beans-button.png"/></a>
+					<a href="/user/{{current_user.fb_id}}"><img src="/static/images/get-beans-button.png"/></a>
 				</div>
       </div>
+			{% endifnotequal %}
     </div>
   </div><!-- /sidebar -->	
 	{% endblock %}

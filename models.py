@@ -24,51 +24,50 @@ class Location(db.Model):
 # submitted (originate) via this web application or via a 3rd party network 
 # like Facebook or Twitter.
 class Brag(db.Model):
-  message = db.StringProperty(required=True)
-  origin = db.StringProperty(required=True)
-  user = db.ReferenceProperty(User, required=True)
-  categories = db.StringListProperty(db.StringProperty)
-  beans = db.IntegerProperty(required=False, default=0)
-  voter_keys = db.StringListProperty(db.StringProperty)
-  location = db.ReferenceProperty(Location, required=False)
-  create_date = db.DateTimeProperty(auto_now_add=True)
-
-class Category(db.Model):
-    name = db.StringProperty(required=True)
-    
-# Bean is a vote on a specific Brag.
-class Bean(db.Model):
-  brag = db.ReferenceProperty(Brag, required=True)	
-  user = db.ReferenceProperty(User, required=True)
-  created = db.DateTimeProperty(auto_now_add=True)
-
-# These are the total Beans awarded to each Brag.
-class BragBeans(db.Model):
-  brag = db.ReferenceProperty(Brag, required=True)	
-  bean_count = db.IntegerProperty(required=True)
-  updated = db.DateTimeProperty(auto_now=True)
+    message = db.StringProperty(required=True)
+    origin = db.StringProperty(required=True)
+    user = db.ReferenceProperty(User, required=True)
+    categories = db.StringListProperty(db.StringProperty)
+    beans = db.IntegerProperty(required=True, default=0)
+    voter_keys = db.StringListProperty(db.StringProperty)
+    location = db.ReferenceProperty(Location, required=False)
+    create_date = db.DateTimeProperty(auto_now_add=True)
 
 # These are the total Beans awarded to all the Brags of a specific User.
-class UserBeans(db.Model):
-  user = db.ReferenceProperty(User, required=True)
-  bean_count = db.IntegerProperty(required=True)
-  updated = db.DateTimeProperty(auto_now=True)
+class UserBeans(db.Model): # user.fb_id is the key
+    user = db.ReferenceProperty(User, required=True)
+    beans = db.IntegerProperty(required=True, default=0)
+    updated = db.DateTimeProperty(auto_now=True)
 
 # These are the total Beans awarded to all the Brags associated to a specific
 # Category.
 class CategoryBeans(db.Model):
-  category = db.ReferenceProperty(Category, required=True)
-  bean_count = db.IntegerProperty(required=True)
-  updated = db.DateTimeProperty(auto_now=True)
+    category = db.StringProperty(required=True)
+    beans = db.IntegerProperty(required=True, default=0)
+    updated = db.DateTimeProperty(auto_now=True)
 
 # Thease are all the Beans awarded to all the Brags associated to a specific
 # Location.
 class LocationBeans(db.Model):
     location = db.ReferenceProperty(Location, required=True)
-    bean_count = db.IntegerProperty(required=True)
+    beans = db.IntegerProperty(required=True, default=0)
     updated = db.DateTimeProperty(auto_now=True)
 
+# Bean is a vote on a specific Brag.
+class Bean(db.Model):
+    brag = db.ReferenceProperty(Brag, required=True)	
+    user = db.ReferenceProperty(User, required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
 
+# These are the total Beans awarded to each Brag.
+class BragBeans(db.Model):
+    brag = db.ReferenceProperty(Brag, required=True)	
+    beans = db.IntegerProperty(required=True, default=0)
+    updated = db.DateTimeProperty(auto_now=True)
+
+class Category(db.Model):
+    name = db.StringProperty(required=True)
+  
 # Enforce Twitter's 140 character limit.
 #def check_length(string):
 #    if len(string) > 140:
