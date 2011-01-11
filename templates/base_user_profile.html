@@ -49,12 +49,13 @@
     	<!-- brag-entry: container for a single Brag -->
       <div class="brag-entry">
       	<div class="brag-vote">
-
 					<form class="vote-form" action="">
-       		<div id="{{brag.key}}" class="vote-count">{{brag.beans}}</div>
-          	<input class="vote-button" type="submit" class="text-button" value="vote+"/>
+       			<div id="{{brag.key}}" class="vote-count">{{brag.beans}}</div>
+						{% if not current_user.fb_id|in_list:brag.voter_keys %}
+						<input class="vote-button" type="submit" class="text-button" value="vote+"/>
 						<input type="hidden" class="brag" name="brag" value="{{brag.key}}">
 						<input type="hidden" class="voter" name="voter" value="{{current_user.fb_id}}">
+						{% endif %}          	
         	</form>
 				</div>
         <div class="brag-message">
@@ -72,7 +73,7 @@
 				</div>
 				--> 
       </div><!-- /brag-entry -->
-      {% endfor %}
+    {% endfor %}
     </div><!-- /brag-list -->                           
   </div><!-- /mainbar -->
 	{% endblock %}	

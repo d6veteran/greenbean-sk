@@ -78,6 +78,7 @@ class MainHandler(webapp.RequestHandler):
         return self._current_user
     
     def generate(self, template_name, template_values):
+        template.register_template_library('templatefilters')
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, os.path.join('templates', template_name))
         self.response.out.write(template.render(path, template_values, debug=DEBUG))
@@ -108,6 +109,12 @@ class UserProfile(MainHandler):
         brag_query = models.Brag.all().order('-create_date')
         brag_query = brag_query.filter('user', profile_user)
         brags = brag_query.fetch(10)
+        vote_privileges = {}
+        for b in brags:
+            if user.fb_id in b.voter_keys:
+                vote_privileges[b.key] = "false"
+            else:
+                vote_privileges[b.key] = "true"   
 
         if facebookRequest(self.request):
             template = "facebook/fb_base_user_profile.html"
@@ -117,6 +124,7 @@ class UserProfile(MainHandler):
         
         self.generate(template, {
                       'brags': brags,
+                      'vote_privileges': vote_privileges,
                       'profile_user': profile_user,
                       'categories': CATS,
                       'current_user': self.current_user,
@@ -179,6 +187,7 @@ class Bean(MainHandler):
         brag_key = self.request.get('brag') 
         voter_fb_id = self.request.get('voter')
         user = self.current_user
+
         logging.info('################ brag_key =' + brag_key + '###########') 
         logging.info('################ voter_fb_id =' + voter_fb_id + '#####') 
         brag = models.Brag.get(brag_key)
@@ -190,8 +199,6 @@ class Bean(MainHandler):
                         i = 1
                 brag.beans =  i + 1
                 brag.put()
-        
-        
         return
 
 
