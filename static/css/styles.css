@@ -19,13 +19,15 @@ h1 { font-size: 22px; text-transform: uppercase; color: #4D7238; }
 #mainbar .user-profile h1 { color: #81290D; font-size: 20px; font-weight: normal; text-transform: uppercase; }
 #mainbar .profile-name h2 { color: #81290D; font-size: 16px; font-weight: normal; text-transform: uppercase; }
 .brag-vote a, .user-beans p { font-size: 12px; }
-.brag-entry p, #mainbar p, #sidebar p, #sidebar ul { font-size: 16px; padding-top: 8px; color: #636363; }
-.brag-entry .brag-meta p, #sidebar p { text-align: left; font-size: 14px; }
+.brag-entry .brag-message p, #sidebar p, #sidebar ul, p { font-size: 16px; padding-top: 8px; color: #636363; }
+.brag-entry .brag-meta p, #sidebar p { text-align: left; font-size: 14px; padding-top: 8px; color: #636363; }
 .user-beans p { text-align: center; line-height: 1em; color: #636363; }
 #start h2 { color: #81290D; font-size: 18px; font-weight: normal; padding-bottom: 4px; }
 .leader-box-header h2 { color: #fff; font-size: 18px; font-weight: normal; padding: 0 0 4px 12px; }
 #footer { font-size: 12px; color: #636363; }
 .vote-button { color: #81290D;  }
+#sidebar strong { color: #4D7238; }
+ul#signup { font-size: 22px; padding-top: 8px; color: #636363; }
 
 /*LAYOUT*/
 body { background-color: #eee9dc; }
@@ -45,6 +47,12 @@ body { background-color: #eee9dc; }
 #content { }
 #content-middle { background: url("../images/content-mid.png") repeat-y scroll center top transparent; position: relative; width: 720px; float: left; }
 #bar-wrapper { margin-left: 24px; width: 100%; }
+
+/*FULLBAR*/
+#fullbar { width: 600px; float: left; padding-right: 28px; min-height: 600px; }
+ul#signup { list-style: none inside; }
+ul#signup li { padding: 12px 0; }
+ul#signup .step { font-size: 26px; -moz-border-radius: 20px; border: solid 0px #688b54; background-color: #688b54; color: white; margin: 12px; padding: 2px 14px 8px 14px; }
 
 /*MAINBAR*/
 #mainbar { width: 386px; float: left; padding-right: 28px; }
@@ -74,13 +82,10 @@ body { background-color: #eee9dc; }
 .brag-wrap .brag-entry { background: url("../images/entry-separator.png") no-repeat scroll left bottom transparent; padding: 0 0 10px 0; margin-bottom: 10px; }
 .brag-entry { float: left; overflow: hidden; padding: 10px 0; width: 100%; background: url("../images/entry-separator.png") no-repeat scroll left top transparent; }
 
-.brag-vote { text-align: center; float: right; }
+.brag-vote { text-align: center; float: right; margin-bottom: 6px; }
 .vote-button { background-color: transparent; text-decoration: underline; border: none; cursor: pointer; padding: 0; }
 
 .vote-count { font-size: 20px; -moz-border-radius: 20px; border: solid 0px #688b54; background-color: #688b54; color: white; margin-top: 4px; padding: 4px 8px 8px 8px; }
-.brag-entry .brag-message { }
-.brag-entry .brag-stats { }
-.brag-entry .brag-comments { }
 
 /*SIDEBAR*/
 #sidebar { width: 260px; float: left; }
@@ -95,4 +100,6 @@ body { background-color: #eee9dc; }
 #footer {  }
 #content-bottom { background: url("../images/content-bottom.png") no-repeat scroll center top transparent; width: 720px; height: 28px; float: left; }
 #footer-content { height: 28px; }
+#bottom-nav { float: left; margin: 6px 0px 0px 24px; }
+#bottom-nav li { display: inline; color: #636363; font-size: 16px; padding-right: 16px; }
 #credit { float: right; margin: 0px 24px 10px 0; }

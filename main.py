@@ -236,8 +236,6 @@ class Bean(MainHandler):
                 # Update the LocationBeans  
                 loc_name = brag.fb_location_name
                 loc_id = brag.fb_location_id
-                logging.info('########## loc_name = '+loc_name+' ###########')
-                logging.info('########## loc_id = '+loc_id+' ###############')
                 loc_beans = models.LocationBeans.get_by_key_name(loc_id)
                 if loc_beans is not None:
                     loc_beans.beans += 1
@@ -248,7 +246,28 @@ class Bean(MainHandler):
                                                      beans = 1)
                 loc_beans.put()    
         return
+        
+class Page(MainHandler):
+    """Returns content for a User Sign Up page.
+    """    
+    def get(self, page=None):
+        if page == "signup":
+            template = "base_signup.html"
+        elif page == "about":
+            template = "base_about.html"    
+        elif page == "contact":
+            template = "base_contact.html"
+        elif page == "rewards":
+            template = "base_rewards.html"                           
+        elif page == "terms":
+            template = "base_terms.html"        
+        else:
+            template = "base_404.html"   
 
+        self.generate(template, {
+                      'current_user':self.current_user,
+                      'facebook_app_id':FACEBOOK_APP_ID})        
+        
 ############################### METHODS ######################################
 def getUser(graph, cookie):
     """Returns a User model, built from the Facebook Graph API data.  Also, 
@@ -257,6 +276,12 @@ def getUser(graph, cookie):
     """
     # Build User from Facebook Graph API ...
     profile = graph.get_object("me")
+    try: # If the user has no location set, make the default "Earth"
+        loc_id = fb_location_id=profile["location"]["id"]
+        loc_name = fb_location_name=profile["location"]["name"]
+    except KeyError:
+        loc_id = "000000000000001"
+        loc_name = "Earth"    
     user = models.User(key_name=str(profile["id"]),
                        fb_id=str(profile["id"]),
                        name=profile["name"],
@@ -349,6 +374,7 @@ def isSpam(user_fb_id):
 
 def main():
     util.run_wsgi_app(webapp.WSGIApplication([(r'/', BaseHandler),
+                                              (r'/page/(.*)', Page),
                                               (r'/user/(.*)', UserProfile),
                                               (r'/category/(.*)', CategoryProfile),  
                                               (r'/location/(.*)', LocationProfile),
