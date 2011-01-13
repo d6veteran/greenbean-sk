@@ -85,12 +85,20 @@ class BaseHandler(MainHandler):
     def get(self):
         # TODO: build lists of top users, categories and locations.
         logging.info("#############  BaseHandler:: get(self): ##############")
-        text = "TODO: build lists of top users, categories and locations."
+        brags = getRecentBrags()
+        category_leaders = getCategoryLeaders()
+        location_leaders = getLocationLeaders()
+        leaders = getLeaders()        
         if facebookRequest(self.request):
-            template = "facebook/fb_base_index.html"            
+            template = "facebook/fb_base.html"            
         else:    
-            template = "base_index.html"        
+            template = "base.html"  
+                 
         self.generate(template, {
+                      'brags': brags,
+                      'leaders': leaders,
+                      'category_leaders': category_leaders,
+                      'location_leaders': location_leaders,        
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})
 
