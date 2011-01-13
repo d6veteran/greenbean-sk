@@ -10,20 +10,20 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-- kind: Bean
+- kind: Brag
   properties:
-  - name: id
-  - name: date
+  - name: categories
+  - name: created
     direction: desc
 
-- kind: Bean
+- kind: Brag
   properties:
-  - name: status_id
-  - name: date
+  - name: fb_location_id
+  - name: created
     direction: desc
 
 - kind: Brag
   properties:
   - name: user
-  - name: create_date
+  - name: created
     direction: desc
