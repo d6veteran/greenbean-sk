@@ -17,4 +17,8 @@ handlers:
       
 - url: /.*
   script: main.py
+  
+error_handlers:
+  - file: 404.html
+
    

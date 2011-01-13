@@ -1,6 +1,6 @@
-{% extends "base_category.html" %}
+{% extends "base.html" %}
 
-	{% block title %}{{category|escape}} - Greenbean{% endblock %}
+	{% block title %}Top Categories - Greenbean{% endblock %}
 	
 	{% block main %}	
 	<!-- MAINBAR --> 
@@ -8,12 +8,12 @@
 
 		{% block top-content %}
     <!-- brag-list: container for list of Brags. --> 
-		<h1>{{category}}  {% if category_beans.beans %} -   {{category_beans.beans}} {% endif %}</h1>
+		<h1>Top Categories</h1>
 		<p>Latest bean requests for those looking to Go Green in the category "{{category}}".</p>
     {% endblock %}
 
 		{% block brags %}
-    <div id="brag-list">
+		<div id="brag-list">
     	{% for brag in brags %}
   		<div class="brag-wrap">
 	  		<!-- user-profile: container for the user's avatar and name. -->
@@ -63,7 +63,8 @@
       	</div><!-- /brag-entry -->
 			</div><!-- /brag-wrap -->
     	{% endfor %}
-    </div><!-- /brag-list -->   
-  	{% endblock %}                    
+    </div><!-- /brag-list --> 
+		{% endblock %}
+                          
   </div><!-- /mainbar -->
 	{% endblock %}	

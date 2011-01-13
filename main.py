@@ -12,6 +12,8 @@ SITE="localhosttest-sk"
 
 CATS=["Reduce","Reuse","Recycle","Organic","Wind","Solar",
       "Walk","Bus","Bike","Local","Carpool"]
+      
+ERROR_PAGE = "base_404.html"      
 
 # local site: http://apps.facebook.com/mymicrodonations/
 DEBUG = True
@@ -89,7 +91,6 @@ class BaseHandler(MainHandler):
         else:    
             template = "base_index.html"        
         self.generate(template, {
-                      'text': text,
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})
 
@@ -113,7 +114,7 @@ class UserProfile(MainHandler):
             template = "base_user_profile.html"
         
         self.generate(template, {
-                      'beans': getUserBeans(profile_user),    
+                      'beans': getUserBeans(profile_user, self),    
                       'brags': brags,
                       'profile_user': profile_user,
                       'categories': CATS,
@@ -192,7 +193,6 @@ class LocationProfile(MainHandler):
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})  
 
-
 class Bean(MainHandler):
     """Updates bean count for a Brag and associated Categories, Users and
     Locations.
@@ -246,7 +246,7 @@ class Bean(MainHandler):
                                                      beans = 1)
                 loc_beans.put()    
         return
-        
+
 class Page(MainHandler):
     """Returns content for a User Sign Up page.
     """    
@@ -268,6 +268,44 @@ class Page(MainHandler):
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})        
         
+# THIS HANDLER IS NOT COMPLETE        
+class TopProfile(MainHandler):
+    """Returns content for Category Profile pages.
+    """    
+    def get(self, top=None):
+        logging.info('################## TopProfile::get ###################')
+        user = self.current_user # this is the logged in User
+        brags = getRecentBrags()
+        category_leaders = getCategoryLeaders()
+        location_leaders = getLocationLeaders()
+        leaders = getLeaders()        
+        if facebookRequest(self.request):
+            if top == "categories":
+                template = "facebook/fb_base_category.html"   
+            elif top == "users":
+                template = "facebook/fb_base_users.html"               
+            elif top == "locations":             
+                template = "facebook/fb_base_locations.html"
+            else:
+                template = "facebook/fb_base_404.html"                           
+        else:  
+            if top == "categories":
+                template = "base_category.html"   
+            elif top == "users":
+                template = "base_users.html"               
+            elif top == "locations":             
+                template = "base_locations.html"
+            else:
+                template = "base_404.html"                
+
+        self.generate(template, {
+                      'brags': brags,
+                      'leaders': leaders,
+                      'category_leaders': category_leaders,
+                      'location_leaders': location_leaders,
+                      'current_user':self.current_user,
+                      'facebook_app_id':FACEBOOK_APP_ID}) 
+
 ############################### METHODS ######################################
 def getUser(graph, cookie):
     """Returns a User model, built from the Facebook Graph API data.  Also, 
@@ -359,12 +397,21 @@ def getLocationLeaders():
     location_leaders_query = models.LocationBeans.all().order('-beans')
     return location_leaders_query.fetch(10)         
 
-def getUserBeans(user):
-    user_beans = models.UserBeans.get_by_key_name(user.fb_id)
+def getRecentBrags():
+    brags_query = models.Brag.all().order('-created')
+    return brags_query.fetch(10)    
+
+def getUserBeans(user, self):
+    try:
+        user_beans = models.UserBeans.get_by_key_name(user.fb_id)
+    except:
+        self.generate(ERROR_PAGE, {'current_user': self.current_user,
+                                   'facebook_app_id':FACEBOOK_APP_ID})
     if user:
         return user_beans.beans
     else:
         return 0
+        
 def isSpam(user_fb_id):
     user = models.User.get_by_key_name(user_fb_id)
     if user.name is not None: # User's w/out name have bypassed Facebook login
@@ -373,12 +420,13 @@ def isSpam(user_fb_id):
         return True
 
 def main():
-    util.run_wsgi_app(webapp.WSGIApplication([(r'/', BaseHandler),
-                                              (r'/page/(.*)', Page),
+    util.run_wsgi_app(webapp.WSGIApplication([(r'/page/(.*)', Page),
                                               (r'/user/(.*)', UserProfile),
                                               (r'/category/(.*)', CategoryProfile),  
                                               (r'/location/(.*)', LocationProfile),
-                                              ('/bean', Bean)],
+                                              (r'/top/(.*)', TopProfile),
+                                              ('/bean', Bean),
+                                              (r'/.*', BaseHandler)],
                                               debug=DEBUG))
 ##############################################################################
 if __name__ == "__main__":
