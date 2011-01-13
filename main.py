@@ -267,44 +267,6 @@ class Page(MainHandler):
         self.generate(template, {
                       'current_user':self.current_user,
                       'facebook_app_id':FACEBOOK_APP_ID})        
-        
-# THIS HANDLER IS NOT COMPLETE        
-class TopProfile(MainHandler):
-    """Returns content for Category Profile pages.
-    """    
-    def get(self, top=None):
-        logging.info('################## TopProfile::get ###################')
-        user = self.current_user # this is the logged in User
-        brags = getRecentBrags()
-        category_leaders = getCategoryLeaders()
-        location_leaders = getLocationLeaders()
-        leaders = getLeaders()        
-        if facebookRequest(self.request):
-            if top == "categories":
-                template = "facebook/fb_base_category.html"   
-            elif top == "users":
-                template = "facebook/fb_base_users.html"               
-            elif top == "locations":             
-                template = "facebook/fb_base_locations.html"
-            else:
-                template = "facebook/fb_base_404.html"                           
-        else:  
-            if top == "categories":
-                template = "base_category.html"   
-            elif top == "users":
-                template = "base_users.html"               
-            elif top == "locations":             
-                template = "base_locations.html"
-            else:
-                template = "base_404.html"                
-
-        self.generate(template, {
-                      'brags': brags,
-                      'leaders': leaders,
-                      'category_leaders': category_leaders,
-                      'location_leaders': location_leaders,
-                      'current_user':self.current_user,
-                      'facebook_app_id':FACEBOOK_APP_ID}) 
 
 ############################### METHODS ######################################
 def getUser(graph, cookie):
@@ -424,7 +386,6 @@ def main():
                                               (r'/user/(.*)', UserProfile),
                                               (r'/category/(.*)', CategoryProfile),  
                                               (r'/location/(.*)', LocationProfile),
-                                              (r'/top/(.*)', TopProfile),
                                               ('/bean', Bean),
                                               (r'/.*', BaseHandler)],
                                               debug=DEBUG))
