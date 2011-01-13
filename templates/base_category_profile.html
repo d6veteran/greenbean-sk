@@ -7,12 +7,15 @@
 	<div id="mainbar">
 
 		{% block top-content %}
-    <!-- brag-list: container for list of Brags. --> 
-		<h1>{{category}}  {% if category_beans.beans %} -   {{category_beans.beans}} {% endif %}</h1>
+		<h1 id="category-name">
+			<span class="name">Category - {{category}} </span>
+			<span class="beans">{% if category_beans.beans %}{{category_beans.beans}}{% endif %}</span>
+		</h1>	
 		<p>Latest bean requests for those looking to Go Green in the category "{{category}}".</p>
     {% endblock %}
 
 		{% block brags %}
+    <!-- brag-list: container for list of Brags. --> 
     <div id="brag-list">
     	{% for brag in brags %}
   		<div class="brag-wrap">

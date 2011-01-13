@@ -12,8 +12,8 @@
       </div>
       <div class="profile-name">
       	<h1 id="user-name">
-					<span class="name">{{ profile_user.name|escape }} - </span>
-					<span class="beans-count"> ({{beans}})</span>
+					<span class="name">{{ profile_user.name|escape }} </span>
+					<span class="beans">{{beans}}</span>
 				</h1>
       </div>
     </div><!-- /user-profile -->
@@ -81,4 +81,70 @@
     </div><!-- /brag-list -->                           
   </div><!-- /mainbar -->
 	{% endblock %}	
-	
+
+	{% block sidebar%}
+  <!-- SIDEBAR --> 
+  <div id="sidebar">
+		{% if not current_user.fb_id %}
+  	<div class="side-block">
+			<div id="start">
+      	<h2>Go Green, Earn Beans!</h2>
+        <ul>
+        	<li><strong>Get ranked</strong> on your Green accomplishments.</li>
+        	<li><strong>Reward</strong> your friends' who are going green.</li>					
+          <li>Earn beans for you and your community and <strong>win prizes</strong>.</li>
+        </ul>
+        <div id="start-button">
+					<a href="/page/signup"><img src="/static/images/get-beans-button.png"/></a>
+				</div>
+      </div><!-- /start -->
+    </div><!-- /side-block -->
+		{% endif %}
+
+  	<div class="side-block">
+    	<div id="leaders" class="leader-box">
+				<div class="leader-box-header">
+      		<h2>Greenbean Leaders</h2>
+        </div>
+				<div class="leader-box-content">
+					<ul>
+					{% for x in leaders %}
+        		<li>{{x.beans}} -- <a href="/user/{{x.user.fb_id}}">{{x.user.name}}</a></li>
+					{% endfor %}
+      		</ul>
+				</div>
+      </div><!-- /leaders -->
+    </div><!-- /side-block -->
+
+  	<div class="side-block">
+    	<div id="cat-leaders" class="leader-box">
+				<div class="leader-box-header">
+      		<h2>Top Categories</h2>
+				</div>
+				<div class="leader-box-content">
+        	<ul>
+					{% for c in category_leaders %}
+        		<li>{{c.beans}} -- <a href="/category/{{c.name}}">{{c.name}}</a></li>
+					{% endfor %}
+      		</ul>
+				</div>
+      </div><!-- /cat-leaders -->
+    </div><!-- /side-block -->
+
+  	<div class="side-block">
+    	<div id="loc-leaders" class="leader-box">
+				<div class="leader-box-header">
+      		<h2>Top Locations</h2>
+				</div>
+				<div class="leader-box-content">
+        	<ul>
+					{% for l in location_leaders %}
+         		<li>{{l.beans}} -- <a href="/location/{{l.fb_id}}">{{l.fb_name}}</a></li>
+ 					{% endfor %}
+        	</ul>
+				</div>	
+      </div><!-- /loc-leaders -->
+    </div><!-- /side-block -->
+
+  </div><!-- /sidebar -->						
+	{% endblock %}	

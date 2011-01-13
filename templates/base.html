@@ -158,7 +158,7 @@
 						{% block sidebar%}
 					  <!-- SIDEBAR --> 
 					  <div id="sidebar">
-							{% ifnotequal current_user.fb_id profile_user.fb_id %}
+							{% if not current_user.fb_id %}
 					  	<div class="side-block">
 								<div id="start">
 					      	<h2>Go Green, Earn Beans!</h2>
@@ -172,7 +172,13 @@
 									</div>
 					      </div><!-- /start -->
 					    </div><!-- /side-block -->
-							{% endifnotequal %}
+							{% else %}
+					  	<div class="side-block">
+								<div id="update">
+					      	<p><span>Got Beans?<a href="/user/{{current_user.fb_id}}"> Update Your Status!</a></span></p>
+					      </div><!-- /start -->
+					    </div><!-- /side-block -->							
+							{% endif %}
 
 					  	<div class="side-block">
 					    	<div id="leaders" class="leader-box">

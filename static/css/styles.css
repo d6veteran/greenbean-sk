@@ -17,18 +17,19 @@ h1#error { font-size: 40px; color: red; }
 #fb-profile { font-size: 14px; text-align: right; }
 #brag-form h2 { color: #81290D; font-size: 16px; font-weight: normal; padding-bottom: 4px; }
 #tag-list label { white-space:nowrap; }
-#mainbar .user-profile h1 { color: #81290D; font-size: 20px; font-weight: normal; text-transform: uppercase; }
+h1#user-name, h1#category-name, h1#location-name { color: #4D7238; font-size: 20px; font-weight: normal; text-transform: uppercase; padding: 0px; }
 #mainbar .profile-name h2 { color: #81290D; font-size: 16px; font-weight: normal; text-transform: uppercase; }
 .brag-vote a, .user-beans p { font-size: 12px; }
 .brag-entry .brag-message p, #sidebar p, #sidebar ul, p { font-size: 16px; padding-top: 8px; color: #636363; }
 .brag-entry .brag-meta p, #sidebar p { text-align: left; font-size: 14px; padding-top: 8px; color: #636363; }
 .user-beans p { text-align: center; line-height: 1em; color: #636363; }
-#start h2 { color: #81290D; font-size: 18px; font-weight: normal; padding-bottom: 4px; }
+#start h2 { color: #4D7238; font-size: 18px; font-weight: normal; padding-bottom: 4px; }
 .leader-box-header h2 { color: #fff; font-size: 18px; font-weight: normal; padding: 0 0 4px 12px; }
 #footer { font-size: 12px; color: #636363; }
 .vote-button { color: #81290D;  }
 #sidebar strong { color: #4D7238; }
 ul#signup { font-size: 22px; padding-top: 8px; color: #636363; }
+.vote-count, .beans { font-family: arial; }
 
 /*LAYOUT*/
 body { background-color: #eee9dc; }
@@ -65,11 +66,11 @@ ul#signup .step { font-size: 26px; -moz-border-radius: 20px; border: solid 0px #
 
 /*MAINBAR*/
 #mainbar { width: 386px; float: left; padding-right: 28px; }
-
+h1 span.beans { font-size: 26px; -moz-border-radius: 20px; border: solid 0px #688b54; background-color: #81290D; color: white; margin-left: 8px; padding: 4px 12px 4px 12px; }
 .user-profile { height: 60px; }
 .user-profile .profile-image { float: left; }
 .user-profile .profile-image img { border: solid #c3c7bd 2px; }
-.user-profile .profile-name, .user-profile-tiny .profile-name { margin-left: 8px; float: left; }
+.user-profile .profile-name, .user-profile-tiny .profile-name { margin: 12px 0 0 8px; float: left; }
 .user-profile .user-beans { float: left; margin-left: 12px; }
 .user-profile .user-bean-count { float: left; font-size: 20px; -moz-border-radius: 20px; border: solid 0px #688b54; background-color: #688b54; color: white; margin: -4px 6px 0 10px; padding: 4px 8px 8px 8px;  }
 .user-profile .user-bean-text { float: right; }
@@ -94,7 +95,7 @@ ul#signup .step { font-size: 26px; -moz-border-radius: 20px; border: solid 0px #
 .brag-vote { text-align: center; float: right; margin-bottom: 6px; }
 .vote-button { background-color: transparent; text-decoration: underline; border: none; cursor: pointer; padding: 0; }
 
-.vote-count { font-size: 20px; -moz-border-radius: 20px; border: solid 0px #688b54; background-color: #688b54; color: white; margin-top: 4px; padding: 4px 8px 8px 8px; }
+.vote-count { font-size: 20px; -moz-border-radius: 20px; border: solid 0px #688b54; background-color: #688b54; color: white; margin-top: 4px; padding: 4px 10px 4px 10px; }
 
 /*SIDEBAR*/
 #sidebar { width: 260px; float: left; }
@@ -104,6 +105,8 @@ ul#signup .step { font-size: 26px; -moz-border-radius: 20px; border: solid 0px #
 .leader-box-content { padding: 2px 12px 6px; }
 #start ul { list-style-image: url("../images/green-bullet.png"); margin-left: 20px;  }
 #start-button { width: 88px; height: 32px; margin: 10px 0 0 172px; clear: both; }
+#update p { text-align: right; padding: 0px 10px 0px 0px; }
+
 
 /*FOOTER*/
 #footer {  }

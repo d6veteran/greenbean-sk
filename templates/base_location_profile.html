@@ -5,9 +5,15 @@
 	{% block main %}	
 	<!-- MAINBAR --> 
 	<div id="mainbar">
-    <!-- brag-list: container for list of Brags. --> 
-		<h1>{{location_beans.fb_name|escape}}  {% if location_beans.beans %} -   {{location_beans.beans}} {% endif %}</h1>
-		<p>Latest bean requests for those looking to Go Green in the category "{{location_beans.fb_name|escape}}".</p>
+		{% block top-content %}
+		<h1 id="location-name">
+			<span class="name">{{location_beans.fb_name|escape}} </span>
+			<span class="beans">{% if location_beans.beans %} {{location_beans.beans}} {% endif %}</span>
+		</h1>
+		<p>Latest bean requests for those looking to Go Green in the community of "{{location_beans.fb_name|escape}}".</p>
+    {% endblock %}
+
+		<!-- brag-list: container for list of Brags. --> 
     <div id="brag-list">
     {% for brag in brags %}
   		<div class="brag-wrap">
