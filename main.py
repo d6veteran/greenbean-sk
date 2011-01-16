@@ -5,9 +5,23 @@
 ##############################################################################
 
 ## LOCALHOST:8080 - UNCOMMENT FOR LOCAL TESTING ##############################
-FACEBOOK_APP_ID = "174331539272451"
-FACEBOOK_APP_SECRET = "f4f8e3762a2abbe62dee8bf44a4967a4"
-SITE="localhosttest-sk"
+#FACEBOOK_APP_ID = "174331539272451"
+#FACEBOOK_APP_SECRET = "f4f8e3762a2abbe62dee8bf44a4967a4"
+#SITE="localhosttest-sk"
+##############################################################################
+
+## SAM LOCALHOST:8096 - UNCOMMENT FOR LOCAL TESTING ##########################
+#app name - coolbeans-local
+#FACEBOOK_APP_ID = "13641208923"
+#FACEBOOK_APP_SECRET = "71e4b7fea11728cd8e0c022801b278b1"
+#SITE="mymicrodonations"
+##############################################################################
+
+## SAM Live - UNCOMMENT FOR Live TESTING #####################################
+#app name = sampyxisstockwatcher
+FACEBOOK_APP_ID = "157819884231043"
+FACEBOOK_APP_SECRET = "7142daa5ac2753ac6b06f70855830a9a"
+SITE="gbsamtest"
 ##############################################################################
 
 CATS=["Reduce","Reuse","Recycle","Organic","Wind","Solar",
@@ -15,7 +29,6 @@ CATS=["Reduce","Reuse","Recycle","Organic","Wind","Solar",
       
 ERROR_PAGE = "base_404.html"      
 
-# local site: http://apps.facebook.com/mymicrodonations/
 DEBUG = True
 
 import base64
@@ -51,6 +64,15 @@ class MainHandler(webapp.RequestHandler):
     @property
     def current_user(self):
         logging.info('########### BaseHandler:: current_user ###########')
+
+        cookie = facebook.get_user_from_cookie(
+            self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET
+        )
+        #Sam - checking to see if we have a FB cookie
+        # If the user is logged out of FB - set the _current_user to None
+        if not cookie:
+            self._current_user = None
+            
         if not hasattr(self, "_current_user"):
             self._current_user = None
             cookie = facebook.get_user_from_cookie(
@@ -60,9 +82,11 @@ class MainHandler(webapp.RequestHandler):
                 # a round-trip to Facebook on every request
                 user = models.User.get_by_key_name(cookie["uid"])
                 if not user: # Build a User
+                    logging.info("Building a user")
                     user = getUser(
                             facebook.GraphAPI(cookie["access_token"]),
                             cookie)
+                    logging.info("User built: " + user.name)
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
                     user.put()
@@ -74,7 +98,9 @@ class MainHandler(webapp.RequestHandler):
         directory = os.path.dirname(__file__)
         path = os.path.join(directory, 
                             os.path.join('templates', template_name))
-                            
+
+        #Sam - setting the headers for IE IFrame bug
+        self.response.headers["P3P"] = 'CP="IDC CURa ADMa OUR IND PHY ONL COM STA"'                            
         self.response.out.write(template.render(path, 
                                                 template_values, 
                                                 debug=DEBUG))
@@ -294,8 +320,8 @@ def getUser(graph, cookie):
                        fb_id=str(profile["id"]),
                        name=profile["name"],
                        fb_profile_url=profile["link"],
-                       fb_location_id=profile["location"]["id"],
-                       fb_location_name=profile["location"]["name"],
+                       fb_location_id=loc_id, #profile["location"]["id"],
+                       fb_location_name=loc_name, #profile["location"]["name"],
                        access_token=cookie["access_token"])
                        
     user.put() 
@@ -377,7 +403,8 @@ def getUserBeans(user, self):
     except:
         self.generate(ERROR_PAGE, {'current_user': self.current_user,
                                    'facebook_app_id':FACEBOOK_APP_ID})
-    if user:
+    #Sam - changed this from 'user' to 'user_beans' - it was throwing an error for me    
+    if user_beans:
         return user_beans.beans
     else:
         return 0
@@ -388,6 +415,8 @@ def isSpam(user_fb_id):
         return False
     else:
         return True
+##############################################################################
+
 
 def main():
     util.run_wsgi_app(webapp.WSGIApplication([(r'/page/(.*)', Page),
